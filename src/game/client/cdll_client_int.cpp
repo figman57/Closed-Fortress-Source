@@ -1167,15 +1167,6 @@ int CHLClient::Init(CreateInterfaceFn appSystemFactory, CreateInterfaceFn physic
 	// pBaseModPanel->SetKeyBoardInputEnabled( IsPC() );
 	pBaseModPanel->SetKeyBoardInputEnabled(true);
 
-	static CDllDemandLoader g_GameUIDLL("GameUI");
-	CreateInterfaceFn gameUIFactory = g_GameUIDLL.GetFactory();
-	IGameUI* gameui = (IGameUI *)gameUIFactory(GAMEUI_INTERFACE_VERSION, NULL);
-	gameui->SetBasePanel((IBasePanel*)pBaseModPanel);
-	
-	IEngineVGui * enginevguifuncs = (IEngineVGui *)appSystemFactory(VENGINE_VGUI_VERSION, NULL);
-	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
-	pBaseModPanel->SetParent(rootpanel);
-
 	CTFLoadoutPanel *pLoadoutPanel = GLoadoutPanel();
 	pLoadoutPanel->InvalidateLayout( false, true );
 	pLoadoutPanel->SetVisible( false );

@@ -44,13 +44,6 @@
 #include "ienginevgui.h"
 #include "video/ivideoservices.h"
 
-/*
-#include "VMainMenu.h"
-#include "VInGameMainMenu.h"
-#include "VGenericConfirmation.h"
-#include "VFooterPanel.h"
-*/
-
 // vgui2 interface
 // note that GameUI project uses ..\vgui2\include, not ..\utils\vgui\include
 #include "vgui/Cursor.h"
@@ -72,19 +65,9 @@
 
 #include <vgui/IInput.h>
 
-/*
-#include "BaseModPanel.h"
-#include "basemodui.h"
-typedef BaseModUI::CBaseModPanel UI_BASE_PANEL_CLASS;
-inline UI_BASE_PANEL_CLASS & GetBasePanel() { return UI_BASE_PANEL_CLASS::GetSingleton(); }
-inline UI_BASE_PANEL_CLASS & ConstructGetBasePanel() { return * new UI_BASE_PANEL_CLASS(); }
-using namespace BaseModUI;
-*/
-
-// #include "BasePanel.h"
+#include "BasePanel.h"
 IBasePanel* gBasePanel = NULL;
 inline IBasePanel* GetBasePanel() { return gBasePanel; }
-// inline UI_BASE_PANEL_CLASS & ConstructGetBasePanel() { return *new CBasePanel(); }
 
 ConVar of_pausegame( "of_pausegame", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "If set, pauses whenever you open the in game menu." );;
 
@@ -154,8 +137,7 @@ vgui::VPANEL GetGameUIBasePanel()
 {
 	if (!GetBasePanel())
 	{
-		// Assert(0);
-		return 0;
+		Assert(0);
 	}
 	return GetBasePanel()->GetVguiPanel().GetVPanel();
 }
@@ -270,7 +252,27 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	{
 		Warning( "CGameUI::Initialize() failed to get necessary interfaces\n" );
 	}
-	
+
+#if 0
+	// setup base panel
+	gBasePanel = new CBasePanel(); // explicit singleton instantiation
+	vgui::Panel& factoryBasePanel = gBasePanel->GetVguiPanel();
+
+	factoryBasePanel.SetBounds(0, 0, 640, 480);
+	factoryBasePanel.SetPaintBorderEnabled(false);
+	factoryBasePanel.SetPaintBackgroundEnabled(true);
+	factoryBasePanel.SetPaintEnabled(true);
+	factoryBasePanel.SetVisible(true);
+
+	factoryBasePanel.SetMouseInputEnabled(IsPC());
+	// factoryBasePanel.SetKeyBoardInputEnabled( IsPC() );
+	factoryBasePanel.SetKeyBoardInputEnabled(true);
+
+	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
+	factoryBasePanel.SetParent(rootpanel);
+#endif
+
+
 	InitBackgroundSettings();
 }
 
@@ -1374,20 +1376,6 @@ STUB_GAMEUI_FUNC(SendMainMenuCommand, void, , const char *pszCommand);
 void CGameUI::SetBasePanel(IBasePanel* basePanel)
 {
 	gBasePanel = basePanel;
-
-	// setup base panel
-	// vgui::Panel& factoryBasePanel = basePanel->GetVguiPanel(); // ConstructGetBasePanel().GetVguiPanel(); // explicit singleton instantiation
-
-	// factoryBasePanel.SetBounds(0, 0, 640, 480);
-	// factoryBasePanel.SetPaintBorderEnabled(false);
-	// factoryBasePanel.SetPaintBackgroundEnabled(true);
-	// factoryBasePanel.SetPaintEnabled(true);
-	// factoryBasePanel.SetVisible(true);
-	// 
-	// factoryBasePanel.SetMouseInputEnabled(IsPC());
-	// // factoryBasePanel.SetKeyBoardInputEnabled( IsPC() );
-	// factoryBasePanel.SetKeyBoardInputEnabled(true);
-
-	// vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
-	// factoryBasePanel.SetParent(rootpanel);
+	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
+	gBasePanel->GetVguiPanel().SetParent(rootpanel);
 }

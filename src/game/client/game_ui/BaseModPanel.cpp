@@ -94,11 +94,6 @@
 #include "vgui_controls/KeyRepeat.h"
 #include "vgui/IInput.h"
 #include "vgui/IVGui.h"
-// #include "NewGameDialog.h"
-// #include "BonusMapsDialog.h"
-// #include "LoadGameDialog.h"
-// #include "SaveGameDialog.h"
-// #include "OptionsDialog.h"
 
 #include "../cdll_client_int.h"
 
@@ -580,6 +575,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_lastActiveUserId( 0 )
 {
 	g_pBasePanel = this;
+	GameUI().SetBasePanel(g_pBasePanel);
 
 	MakePopup( false );
 
@@ -799,9 +795,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			m_Frames[wt] = new GameSettings(this, "GameSettings");
 			break;
 */
-		case WT_GENERICCONFIRMATION:
-			m_Frames[wt] = new GenericConfirmation(this, "GenericConfirmation");
-			break;
 
 		case WT_KEYBOARDMOUSE:
 			m_Frames[wt] = new VKeyboard(this, "VKeyboard");
@@ -818,6 +811,9 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			m_Frames[wt] = new Video(this, "Video");
 			break;
 #endif
+		case WT_GENERICCONFIRMATION:
+			m_Frames[wt] = new GenericConfirmation(this, "GenericConfirmation");
+			break;
 
 		case WT_LOADINGPROGRESSBKGND:
 			m_Frames[wt] = new LoadingProgress(this, "LoadingProgress", LoadingProgress::LWT_BKGNDSCREEN);
@@ -2054,7 +2050,6 @@ void CBaseModPanel::PaintBackground()
 		{
 			ActivateBackgroundEffects();
 
-#if 0
 			if ( ASWBackgroundMovie() )
 			{
 				ASWBackgroundMovie()->Update();
@@ -2088,13 +2083,11 @@ void CBaseModPanel::PaintBackground()
 					}
 				}
 			}
-#endif
 		}
 		else
 		{
 			ActivateBackgroundEffects();
 
-#if 0
 			if ( ASWBackgroundMovie() )
 			{
 				ASWBackgroundMovie()->Update();
@@ -2170,7 +2163,6 @@ void CBaseModPanel::PaintBackground()
 					pRenderContext->PopMatrix();
 				}
 			}
-#endif
 		}
 	}
 

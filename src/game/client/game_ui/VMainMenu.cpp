@@ -22,7 +22,7 @@
 #include "vaddonassociation.h"
 
 //#include "VSignInDialog.h"
-#include "VGuiSystemModuleLoader.h"
+// #include "VGuiSystemModuleLoader.h"
 //#include "VAttractScreen.h"
 #include "gamemodes.h"
 #include "filesystem.h"
@@ -924,6 +924,7 @@ void MainMenu::OpenServerBrowser()
 
 CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 {
+#if 0
 	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
 	if ( isSteam )
 	{
@@ -944,4 +945,5 @@ CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 		g_VModuleLoader.PostMessageToAllModules( pSchemeKV );
 
 	}
+#endif
 }
