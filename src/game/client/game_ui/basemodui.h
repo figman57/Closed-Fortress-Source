@@ -10,7 +10,7 @@
 #include "BaseModPanel.h"
 #include "basemodframe.h"
 #include "UIGameData.h"
-#include "GameUI_Interface.h"
+#include <GameUI/IGameUI.h>
 #include "const.h"
 
 #ifndef _CERT

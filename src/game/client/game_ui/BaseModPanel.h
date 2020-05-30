@@ -14,13 +14,7 @@
 #include "vgui_controls/MenuItem.h"
 #include "vgui_controls/MessageDialog.h"
 #include "tier1/utllinkedlist.h"
-#include "OptionsDialog.h"
-#include "OptionsSubKeyboard.h"
-#include "OptionsSubMouse.h"
-#include "optionsmousedialog.h"
 #include "customizationdialog.h"
-#include "CreateMultiplayerGameDialog.h"
-#include "PlayerListDialog.h"
 
 #include <GameUI/gameui_shared.h>
 
@@ -197,7 +191,7 @@ namespace BaseModUI
 		vgui::DHANDLE<CCustomizationDialog> m_hCustomizationDialog;	// standalone options dialog - PC only
 		vgui::DHANDLE<COptionsMouseDialog> m_hOptionsMouseDialog;	// standalone options dialog - PC only
 		vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
-		vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
+		// vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
 		int m_lastActiveUserId;
 
 		vgui::HFont m_hDefaultFont;

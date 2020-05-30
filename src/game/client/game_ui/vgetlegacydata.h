@@ -8,7 +8,7 @@
 #define __VGETLEGACYDATA_H__
 
 #include "vgui_controls/cvartogglecheckbutton.h"
-#include "gameui_util.h"
+// #include "gameui_util.h"
 
 #include "basemodui.h"
 
