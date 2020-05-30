@@ -52,6 +52,7 @@
 //#include "VVoteOptions.h"
 #include "VLoadingProgress.h"
 #include "VMainMenu.h"
+#include "VMainMenuCustom.h"
 #include "VMultiplayer.h"
 //#include "VOptions.h"
 //#include "VSignInDialog.h"
@@ -756,7 +757,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			m_Frames[wt] = new VKeyboard(this, "VKeyboard");
 			break;
 		case WT_MAINMENU:
-			m_Frames[wt] = new MainMenu(this, "MainMenu");
+			m_Frames[wt] = new MainMenuCustom(this, "MainMenu");
 			break;
 			
 		case WT_MULTIPLAYER:

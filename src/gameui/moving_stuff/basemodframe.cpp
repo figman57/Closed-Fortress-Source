@@ -5,7 +5,8 @@
 //=====================================================================================//
 
 #include <ctype.h>
-#include "basemodframe.h"
+#include <GameUI/basemodframe.h>
+
 #include "BaseModPanel.h"
 #include "EngineInterface.h"
 

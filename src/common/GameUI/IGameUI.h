@@ -13,6 +13,7 @@
 
 #include "interface.h"
 #include "vgui/IPanel.h"
+#include "basemodframe.h"
 
 #if !defined( _X360 )
 #include "xbox/xboxstubs.h"
@@ -114,6 +115,10 @@ public:
 	virtual void SetMainMenuOverride( vgui::VPANEL panel ) = 0;
 	// Client DLL is telling us that a main menu command was issued, probably from its custom main menu panel
 	virtual void SendMainMenuCommand( const char *pszCommand ) = 0;
+
+// #ifdef OF_CLIENT
+	virtual void SetPanelOverride( int panelId, vgui::VPANEL panel ) = 0;
+// #endif
 };
 
 #define GAMEUI_INTERFACE_VERSION "GameUI011"

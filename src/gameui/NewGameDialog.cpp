@@ -30,7 +30,7 @@
 #include "CommentaryExplanationDialog.h"
 #include "vgui_controls/BitmapImagePanel.h"
 #include "BonusMapsDatabase.h"
-#include "BaseModPanel.h"
+#include "BasePanel.h"
 
 #include <stdio.h>
 
@@ -548,10 +548,12 @@ void CNewGameDialog::Activate( void )
 
 	if ( GameUI().IsConsoleUI() )
 	{
+#if 0
 		// Stop blinking the menu item now that we've seen the unlocked stuff
 		BaseModUI::CBaseModPanel *pBasePanel = BaseModUI::BasePanel();
 		if ( pBasePanel )
 			pBasePanel->SetMenuItemBlinkingState( "OpenNewGameDialog", false );
+#endif
 
 		BonusMapsDatabase()->SetBlink( false );
 	}

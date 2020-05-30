@@ -44,10 +44,12 @@
 #include "ienginevgui.h"
 #include "video/ivideoservices.h"
 
+/*
 #include "VMainMenu.h"
 #include "VInGameMainMenu.h"
 #include "VGenericConfirmation.h"
 #include "VFooterPanel.h"
+*/
 
 // vgui2 interface
 // note that GameUI project uses ..\vgui2\include, not ..\utils\vgui\include
@@ -70,14 +72,23 @@
 
 #include <vgui/IInput.h>
 
+/*
 #include "BaseModPanel.h"
 #include "basemodui.h"
 typedef BaseModUI::CBaseModPanel UI_BASEMOD_PANEL_CLASS;
 inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
 inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return * new UI_BASEMOD_PANEL_CLASS(); }
 using namespace BaseModUI;
+*/
+
+#include "BasePanel.h"
+typedef CBasePanel UI_BASEMOD_PANEL_CLASS;
+inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
+inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return *new UI_BASEMOD_PANEL_CLASS(); }
 
 ConVar of_pausegame( "of_pausegame", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "If set, pauses whenever you open the in game menu." );;
+
+ConVar ui_scaling("ui_scaling", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Scales VGUI elements with different screen resolutions.");
 
 #ifdef _X360
 #include "xbox/xbox_win32stubs.h"
@@ -285,8 +296,10 @@ void CGameUI::PostInit()
 		enginesound->PrecacheSound( "UI/buttonclickrelease.wav", true, true );
 	}
 
+#if 0
 	// to know once client dlls have been loaded
 	BaseModUI::CUIGameData::Get()->OnGameUIPostInit();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -825,6 +838,7 @@ void CGameUI::OnDisconnectFromServer( uint8 eSteamLoginFailure )
 
 	g_VModuleLoader.PostMessageToAllModules(new KeyValues("DisconnectedFromGame"));
 
+#if 0
 	if ( eSteamLoginFailure == STEAMLOGINFAILURE_NOSTEAMLOGIN )
 	{
 		if ( g_hLoadingDialog )
@@ -846,6 +860,7 @@ void CGameUI::OnDisconnectFromServer( uint8 eSteamLoginFailure )
 			g_hLoadingDialog->DisplayLoggedInElsewhereError();
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -855,7 +870,8 @@ void CGameUI::OnLevelLoadingStarted( bool bShowProgressDialog )
 {
 	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingStarted" ) );
 
-	GetUiBaseModPanelClass().OnLevelLoadingStarted( NULL, bShowProgressDialog );
+	GetUiBaseModPanelClass().OnLevelLoadingStarted();// ( NULL, bShowProgressDialog );
+
 	ShowLoadingBackgroundDialog();
 
 	if ( bShowProgressDialog )
@@ -879,7 +895,8 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 
 	// Need to call this function in the Base mod Panel to let it know that we've finished loading the level
 	// This should fix the loading screen not disappearing.
-	GetUiBaseModPanelClass().OnLevelLoadingFinished(new KeyValues("LoadingFinished"));
+	GetUiBaseModPanelClass().OnLevelLoadingFinished();// (new KeyValues("LoadingFinished"));
+
 	HideLoadingBackgroundDialog();
 
 
@@ -891,7 +908,8 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 //-----------------------------------------------------------------------------
 bool CGameUI::UpdateProgressBar(float progress, const char *statusText)
 {
-	return GetUiBaseModPanelClass().UpdateProgressBar(progress, statusText);
+	// return GetUiBaseModPanelClass().UpdateProgressBar(progress, statusText);
+	return true;
 }
 
 
@@ -930,8 +948,11 @@ bool CGameUI::ContinueProgressBar( float progressFraction )
 	if (!g_hLoadingDialog.Get())
 		return false;
 
+#if 0
 	g_hLoadingDialog->Activate();
 	return g_hLoadingDialog->SetProgressPoint(progressFraction);
+#endif
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -954,6 +975,7 @@ void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char
 			}
 		}
 
+#if 0
 		GenericConfirmation* confirmation = 
 			static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, NULL, true ) );
 
@@ -971,6 +993,7 @@ void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char
 		data.bOkButtonEnabled = true;
 
 		confirmation->SetUsageData(data);
+#endif
 
 		// none of this shit works to bring the dialog in focus immediately without the user clicking on it
 		/*
@@ -1018,7 +1041,9 @@ bool CGameUI::SetProgressBarStatusText(const char *statusText)
 	if (!stricmp(statusText, m_szPreviousStatusText))
 		return false;
 
+#if 0
 	g_hLoadingDialog->SetStatusText(statusText);
+#endif
 	Q_strncpy(m_szPreviousStatusText, statusText, sizeof(m_szPreviousStatusText));
 	return true;
 }
@@ -1031,7 +1056,9 @@ void CGameUI::SetSecondaryProgressBar(float progress /* range [0..1] */)
 	if (!g_hLoadingDialog.Get())
 		return;
 
+#if 0
 	g_hLoadingDialog->SetSecondaryProgress(progress);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1042,7 +1069,9 @@ void CGameUI::SetSecondaryProgressBarText(const char *statusText)
 	if (!g_hLoadingDialog.Get())
 		return;
 
+#if 0
 	g_hLoadingDialog->SetSecondaryProgressText(statusText);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1053,7 +1082,10 @@ bool CGameUI::SetShowProgressText( bool show )
 	if (!g_hLoadingDialog.Get())
 		return false;
 
+#if 0
 	return g_hLoadingDialog->SetShowProgressText( show );
+#endif
+	return false;
 }
 
 
@@ -1160,12 +1192,16 @@ bool CGameUI::HasLoadingBackgroundDialog()
 
 void CGameUI::NeedConnectionProblemWaitScreen()
 {
+#if 0
 	BaseModUI::CUIGameData::Get()->NeedConnectionProblemWaitScreen();
+#endif
 }
 
 void CGameUI::ShowPasswordUI( char const *pchCurrentPW )
 {
+#if 0
 	BaseModUI::CUIGameData::Get()->ShowPasswordUI( pchCurrentPW );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1289,6 +1325,7 @@ STUB_GAMEUI_FUNC(BonusMapNumMedals, void, , int piNumMedals[3]);
 STUB_GAMEUI_FUNC(ValidateStorageDevice, bool, false, int *pStorageDeviceValidated);
 void CGameUI::OnConfirmQuit()
 {
+#if 0
 	if( !engine->IsInGame() )
 	{
 		MainMenu *pMainMenu = static_cast< MainMenu* >( CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ) );
@@ -1306,7 +1343,13 @@ void CGameUI::OnConfirmQuit()
 		}
 		
 	}
+#endif
 }
 STUB_GAMEUI_FUNC(IsMainMenuVisible, bool, false, );
 STUB_GAMEUI_FUNC(SetMainMenuOverride, void, , vgui::VPANEL panel);
 STUB_GAMEUI_FUNC(SendMainMenuCommand, void, , const char *pszCommand);
+
+void CGameUI::SetPanelOverride(int panelId, vgui::VPANEL panel)
+{
+	// CBaseModPanel::GetSingleton()->
+}

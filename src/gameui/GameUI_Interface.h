@@ -15,6 +15,7 @@
 #include "vgui_controls/PHandle.h"
 #include "convar.h"
 
+
 class IGameClientExports;
 class CCommand;
 
@@ -78,6 +79,8 @@ public:
 	virtual bool IsMainMenuVisible(void);
 	virtual void SetMainMenuOverride(vgui::VPANEL panel);
 	virtual void SendMainMenuCommand(const char *pszCommand);
+
+	virtual void SetPanelOverride(int panelId, vgui::VPANEL panel);
 
 	// progress
 	virtual bool UpdateProgressBar(float progress, const char *statusText);
