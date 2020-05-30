@@ -123,6 +123,8 @@
 #include "c_of_music_player.h"
 #include "of_shared_schemas.h"
 #include "of_loadout.h"
+#include "game_ui/BaseModPanel.h"
+#include <GameUI/IGameUI.h>
 #endif
 #include "clientsteamcontext.h"
 #include "renamed_recvtable_compat.h"
@@ -1152,6 +1154,27 @@ int CHLClient::Init(CreateInterfaceFn appSystemFactory, CreateInterfaceFn physic
 	ParseItemsGame();
 	ParseSoundManifest();
 	FMODManager()->InitFMOD();
+
+	BaseModUI::CBaseModPanel* pBaseModPanel = new BaseModUI::CBaseModPanel();
+
+	pBaseModPanel->SetBounds(0, 0, 640, 480);
+	pBaseModPanel->SetPaintBorderEnabled(false);
+	pBaseModPanel->SetPaintBackgroundEnabled(true);
+	pBaseModPanel->SetPaintEnabled(true);
+	pBaseModPanel->SetVisible(true);
+	
+	pBaseModPanel->SetMouseInputEnabled(IsPC());
+	// pBaseModPanel->SetKeyBoardInputEnabled( IsPC() );
+	pBaseModPanel->SetKeyBoardInputEnabled(true);
+
+	static CDllDemandLoader g_GameUIDLL("GameUI");
+	CreateInterfaceFn gameUIFactory = g_GameUIDLL.GetFactory();
+	IGameUI* gameui = (IGameUI *)gameUIFactory(GAMEUI_INTERFACE_VERSION, NULL);
+	gameui->SetBasePanel((IBasePanel*)pBaseModPanel);
+	
+	IEngineVGui * enginevguifuncs = (IEngineVGui *)appSystemFactory(VENGINE_VGUI_VERSION, NULL);
+	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
+	pBaseModPanel->SetParent(rootpanel);
 
 	CTFLoadoutPanel *pLoadoutPanel = GLoadoutPanel();
 	pLoadoutPanel->InvalidateLayout( false, true );

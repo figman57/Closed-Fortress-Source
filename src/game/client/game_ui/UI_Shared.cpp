@@ -6,16 +6,15 @@
 
 #include "cbase.h"
 #include "UI_Shared.h"
-#include "EngineInterface.h"
 #include "VFooterPanel.h"
 #include "vhybridbutton.h"
 #include "VFlyoutMenu.h"
 #include "VGenericConfirmation.h"
-#include "VGuiSystemModuleLoader.h"
+// #include "VGuiSystemModuleLoader.h"
 #include "filesystem.h"
 
 #include "ienginevgui.h"
-#include "BasePanel.h"
+#include "BaseModPanel.h"
 #include "vgui/ISurface.h"
 #include "tier0/icommandline.h"
 #include "fmtstr.h"

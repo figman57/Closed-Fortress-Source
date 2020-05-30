@@ -5,7 +5,7 @@
 //=====================================================================================//
 #include "cbase.h"
 #include "VLoadingProgress.h"
-#include "EngineInterface.h"
+// #include "EngineInterface.h"
 #include "vgui_controls/Label.h"
 #include "vgui_controls/ProgressBar.h"
 #include "vgui/ISurface.h"
@@ -16,7 +16,7 @@
 #include "KeyValues.h"
 #include "fmtstr.h"
 #include "filesystem.h"
-#include "GameUI_Interface.h"
+// #include "GameUI_Interface.h"
 #include "loadingtippanel.h"
 #include "tf_tips.h"
 

@@ -4,8 +4,8 @@
 //
 //=====================================================================================//
 
-#ifndef __VGETLEGACYDATA_H__
-#define __VGETLEGACYDATA_H__
+#ifndef __VGETLEGACYDATA_2_H__
+#define __VGETLEGACYDATA_2_H__
 
 #include "vgui_controls/cvartogglecheckbutton.h"
 // #include "gameui_util.h"

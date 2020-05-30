@@ -17,6 +17,7 @@
 #include "customizationdialog.h"
 
 #include <GameUI/gameui_shared.h>
+#include <GameUI/IBasePanel.h>
 
 //#include "avi/ibik.h"
 #include "ixboxsystem.h"
@@ -81,13 +82,15 @@ namespace BaseModUI
 	//=============================================================================
 	//
 	//=============================================================================
-	class CBaseModPanel : public vgui::EditablePanel
+	class CBaseModPanel : public IBasePanel, public vgui::EditablePanel
 	{
 		DECLARE_CLASS_SIMPLE( CBaseModPanel, vgui::EditablePanel );
 
 	public:
 		CBaseModPanel();
 		~CBaseModPanel();
+
+		virtual vgui::Panel& GetVguiPanel();
 
 		// IMatchEventSink implementation
 	public:
@@ -187,10 +190,10 @@ namespace BaseModUI
 		WINDOW_TYPE m_ActiveWindow[WPRI_COUNT];
 		bool m_LevelLoading;
 		vgui::HScheme m_UIScheme;
-		vgui::DHANDLE<COptionsDialog> m_hOptionsDialog;	// standalone options dialog - PC only
-		vgui::DHANDLE<CCustomizationDialog> m_hCustomizationDialog;	// standalone options dialog - PC only
-		vgui::DHANDLE<COptionsMouseDialog> m_hOptionsMouseDialog;	// standalone options dialog - PC only
-		vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
+		// vgui::DHANDLE<COptionsDialog> m_hOptionsDialog;	// standalone options dialog - PC only
+		// vgui::DHANDLE<CCustomizationDialog> m_hCustomizationDialog;	// standalone options dialog - PC only
+		// vgui::DHANDLE<COptionsMouseDialog> m_hOptionsMouseDialog;	// standalone options dialog - PC only
+		// vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
 		// vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
 		int m_lastActiveUserId;
 
@@ -243,6 +246,8 @@ namespace BaseModUI
 		void OnOpenBonusMapsDialog();
 		void OnOpenLoadGameDialog();
 		void OnOpenSaveGameDialog();
+
+		void CloseMessageDialog(const uint nType);
 
 		vgui::DHANDLE<vgui::Frame> m_hNewGameDialog;
 		vgui::DHANDLE<vgui::Frame> m_hBonusMapsDialog;

@@ -10,7 +10,6 @@
 #include "KeyValues.h"
 #include "VFooterPanel.h"
 #include "vhybridbutton.h"
-#include "EngineInterface.h"
 #include "filesystem.h"
 #include "fmtstr.h"
 #include "vgui/ISurface.h"

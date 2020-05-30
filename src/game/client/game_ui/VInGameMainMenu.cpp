@@ -11,12 +11,11 @@
 #include "VFooterPanel.h"
 #include "VFlyoutMenu.h"
 #include "vhybridbutton.h"
-#include "EngineInterface.h"
 
 #include "fmtstr.h"
 
 #include "game/client/IGameClientExports.h"
-#include "GameUI_Interface.h"
+// #include "GameUI_Interface.h"
 #include "cdll_client_int.h"
 
 #include "vgui/ILocalize.h"

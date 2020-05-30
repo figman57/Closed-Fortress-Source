@@ -8,9 +8,10 @@
 #include <tier0/platform.h>
 #include "vgetlegacydata.h"
 #include "VGenericConfirmation.h"
-#include "EngineInterface.h"
 #include "vgui_controls/Label.h"
 #include "vgui/ISurface.h"
+
+#undef IS_WINDOWS_PC
 
 #ifdef IS_WINDOWS_PC
 #include "windows.h"
@@ -26,7 +27,7 @@ using namespace BaseModUI;
 GetLegacyData::GetLegacyData( Panel *parent, const char *panelName )
  : BaseClass( parent, panelName, true, false, false )
 {
-	GameUI().PreventEngineHideGameUI();
+	// GameUI().PreventEngineHideGameUI();
 	SetProportional( true );
 
 	m_LblDesc = new Label( this, "LblGetLegacyDataDescription", "" );
@@ -41,7 +42,7 @@ GetLegacyData::GetLegacyData( Panel *parent, const char *panelName )
 //=============================================================================
 GetLegacyData::~GetLegacyData()
 {
-	GameUI().AllowEngineHideGameUI();
+	// GameUI().AllowEngineHideGameUI();
 }
 
 //=============================================================================

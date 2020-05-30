@@ -1200,7 +1200,7 @@ void COptionsSubVideo::OpenAdvanced()
 void COptionsSubVideo::LaunchBenchmark()
 {
 	//This was a feature?
-	BasePanel()->OnOpenBenchmarkDialog();
+	// BasePanel()->OnOpenBenchmarkDialog();
 }
 
 //-----------------------------------------------------------------------------

@@ -1,12 +1,14 @@
+#include "cbase.h"
+
 #include "BaseModPanel.h"
 #include "./GameUI/IGameUI.h"
 #include "ienginevgui.h"
 #include "engine/IEngineSound.h"
-#include "EngineInterface.h"
+// #include "EngineInterface.h"
 #include "tier0/dbg.h"
 #include "utlbuffer.h"
 #include "ixboxsystem.h"
-#include "GameUI_Interface.h"
+// #include "GameUI_Interface.h"
 #include "game/client/IGameClientExports.h"
 #include "GameUI/IGameConsole.h"
 #include "inputsystem/iinputsystem.h"
@@ -20,7 +22,7 @@
 #endif
 
 // BaseModUI High-level windows
-#include "PlayerListDialog.h"
+// #include "PlayerListDialog.h"
 #include "VTransitionScreen.h"
 //#include "VAchievements.h"
 #include "vaddonassociation.h"
@@ -52,7 +54,6 @@
 //#include "VVoteOptions.h"
 #include "VLoadingProgress.h"
 #include "VMainMenu.h"
-#include "VMainMenuCustom.h"
 #include "VMultiplayer.h"
 //#include "VOptions.h"
 //#include "VSignInDialog.h"
@@ -65,7 +66,7 @@
 //#include "vjukebox.h"
 //#include "vleaderboard.h"
 #include "vmyugc.h"
-#include "GameConsole.h"
+// #include "GameConsole.h"
 
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
@@ -80,7 +81,7 @@
 #include "smartptr.h"
 #include "nb_header_footer.h"
 #include "vgui_controls/ControllerMap.h"
-#include "ModInfo.h"
+// #include "ModInfo.h"
 #include "vgui_controls/AnimationController.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/Label.h"
@@ -93,11 +94,13 @@
 #include "vgui_controls/KeyRepeat.h"
 #include "vgui/IInput.h"
 #include "vgui/IVGui.h"
-#include "NewGameDialog.h"
-#include "BonusMapsDialog.h"
-#include "LoadGameDialog.h"
-#include "SaveGameDialog.h"
-#include "OptionsDialog.h"
+// #include "NewGameDialog.h"
+// #include "BonusMapsDialog.h"
+// #include "LoadGameDialog.h"
+// #include "SaveGameDialog.h"
+// #include "OptionsDialog.h"
+
+#include "../cdll_client_int.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -125,6 +128,50 @@ CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
 CBaseModPanel *BaseModUI::BasePanel()
 {
 	return g_pBasePanel;
+}
+
+static CDllDemandLoader g_GameUIDLL("GameUI");
+IGameUI*							gameui;
+IGameUI& GameUI()
+{
+	if (!gameui)
+	{
+		CreateInterfaceFn gameUIFactory = g_GameUIDLL.GetFactory();
+		if (gameUIFactory)
+		{
+			gameui = (IGameUI *)gameUIFactory(GAMEUI_INTERFACE_VERSION, NULL);
+			if (!gameui)
+			{
+				Assert(0);
+			}
+		}
+		else
+		{
+			Assert(0);
+		}
+	}
+	return *gameui;
+}
+
+vgui::VPANEL GetGameUIBasePanel()
+{
+	return BasePanel()->GetVPanel();
+}
+
+KeyValues* gBackgroundSettings;
+KeyValues* BackgroundSettings()
+{
+	return gBackgroundSettings;
+}
+
+void InitBackgroundSettings()
+{
+	if (gBackgroundSettings)
+	{
+		gBackgroundSettings->deleteThis();
+	}
+	gBackgroundSettings = new KeyValues("MenuBackgrounds");
+	gBackgroundSettings->LoadFromFile(g_pFullFileSystem, "scripts/menu_backgrounds.txt");
 }
 
 #ifndef _CERT
@@ -199,11 +246,14 @@ void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)
 	{
 		SetContentAlignment(Label::a_east);
 	}
+
+	InitBackgroundSettings();
 }
 
 void CGameMenuItem::PaintBackground()
 {
-	if ( !GameUI().IsConsoleUI() )
+	// if ( !GameUI().IsConsoleUI() )
+	if ( true )
 	{
 		BaseClass::PaintBackground();
 	}
@@ -235,7 +285,8 @@ class CGameMenu : public vgui::Menu
 public:
 	CGameMenu(vgui::Panel *parent, const char *name) : BaseClass(parent, name) 
 	{
-		if ( GameUI().IsConsoleUI() )
+		// if ( GameUI().IsConsoleUI() )
+		if ( false )
 		{
 			// shows graphic button hints
 			m_pConsoleFooter = new CFooterPanel( parent, "MainMenuFooter" );
@@ -357,7 +408,7 @@ public:
 
 			if ( code == KEY_XBUTTON_B || code == KEY_XBUTTON_START )
 			{
-				if ( GameUI().IsInLevel() )
+				if (false) // TODO IMPLEMENT!!! if ( GameUI().IsInLevel() )
 				{
 					GetParent()->OnCommand( "ResumeGame" );
 				}
@@ -372,6 +423,7 @@ public:
 		// HACK: Allow F key bindings to operate even here
 		if ( IsPC() && code >= KEY_F1 && code <= KEY_F12 )
 		{
+#if 0
 			// See if there is a binding for the FKey
 			const char *binding = gameuifuncs->GetBindingForButtonCode( code );
 			if ( binding && binding[0] )
@@ -381,6 +433,7 @@ public:
 				Q_strncpy( szCommand, binding, sizeof( szCommand ) );
 				engine->ClientCmd_Unrestricted( szCommand );
 			}
+#endif
 		}
 	}
 
@@ -423,7 +476,7 @@ public:
 	void UpdateMenuItemState( bool isInGame, bool isMultiplayer )
 	{
 		bool isSteam = IsPC() && ( CommandLine()->FindParm("-steam") != 0 );
-		bool bIsConsoleUI = GameUI().IsConsoleUI();
+		bool bIsConsoleUI = false; // GameUI().IsConsoleUI();
 
 		// disabled save button if we're not in a game
 		for (int i = 0; i < GetChildCount(); i++)
@@ -526,6 +579,8 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_bClosingAllWindows( false ),
 	m_lastActiveUserId( 0 )
 {
+	g_pBasePanel = this;
+
 	MakePopup( false );
 
 	Assert(m_CFactoryBasePanel == 0);
@@ -564,7 +619,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 #endif
 
 	m_FooterPanel = new CBaseModFooterPanel( this, "FooterPanel" );
-	m_hOptionsDialog = NULL;
+	// m_hOptionsDialog = NULL;
 
 	m_bWarmRestartMode = false;
 	m_ExitingFrameCount = 0;
@@ -591,7 +646,8 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_pConsoleAnimationController = NULL;
 	m_pConsoleControlSettings = NULL;
 	
-	if ( GameUI().IsConsoleUI() )
+	// if ( GameUI().IsConsoleUI() )
+	if ( false )
 	{
 		m_pConsoleAnimationController = new AnimationController( this );
 		m_pConsoleAnimationController->SetScriptFile( GetVPanel(), "scripts/GameUIAnimations.txt" );
@@ -633,6 +689,11 @@ CBaseModPanel::~CBaseModPanel()
 
 	// Shutdown UI game data
 	CUIGameData::Shutdown();
+}
+
+vgui::Panel & BaseModUI::CBaseModPanel::GetVguiPanel()
+{
+	return *(static_cast<vgui::Panel *>(this));
 }
 
 //=============================================================================
@@ -699,6 +760,7 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 	{
 		switch ( wt )
 		{
+#if 0
 		case WT_ACHIEVEMENTS:
 //			m_Frames[wt] = new Achievements(this, "Achievements");
 			break;
@@ -741,23 +803,8 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 			m_Frames[wt] = new GenericConfirmation(this, "GenericConfirmation");
 			break;
 
-		case WT_LOADINGPROGRESSBKGND:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_BKGNDSCREEN );
-			break;
-
-		case WT_LOADINGPROGRESS:
-			m_Frames[wt] = new LoadingProgress( this, "LoadingProgress", LoadingProgress::LWT_LOADINGPLAQUE );
-			break;
-
-		case WT_INGAMEMAINMENU:
-			m_Frames[wt] = new InGameMainMenu(this, "InGameMainMenu");
-			break;
-
 		case WT_KEYBOARDMOUSE:
 			m_Frames[wt] = new VKeyboard(this, "VKeyboard");
-			break;
-		case WT_MAINMENU:
-			m_Frames[wt] = new MainMenuCustom(this, "MainMenu");
 			break;
 			
 		case WT_MULTIPLAYER:
@@ -769,6 +816,23 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_VIDEO:
 			m_Frames[wt] = new Video(this, "Video");
+			break;
+#endif
+
+		case WT_LOADINGPROGRESSBKGND:
+			m_Frames[wt] = new LoadingProgress(this, "LoadingProgress", LoadingProgress::LWT_BKGNDSCREEN);
+			break;
+
+		case WT_LOADINGPROGRESS:
+			m_Frames[wt] = new LoadingProgress(this, "LoadingProgress", LoadingProgress::LWT_LOADINGPLAQUE);
+			break;
+
+		case WT_INGAMEMAINMENU:
+			m_Frames[wt] = new InGameMainMenu(this, "InGameMainMenu");
+			break;
+
+		case WT_MAINMENU:
+			m_Frames[wt] = new MainMenu(this, "MainMenu");
 			break;
 
 		default:
@@ -1191,7 +1255,7 @@ void CBaseModPanel::OnGameUIActivated()
 		// Ignore UI activations when loading poster is up
 		return;
 	}
-	else if ( ( !m_LevelLoading && !engine->IsConnected() ) || GameUI().IsInBackgroundLevel() )
+	else if ( ( !m_LevelLoading && !engine->IsConnected() ) /* || GameUI().IsInBackgroundLevel() */ )
 	{
 		bool bForceReturnToFrontScreen = false;
 		WINDOW_TYPE wt = GetActiveWindowType();
@@ -1253,10 +1317,10 @@ void CBaseModPanel::OnGameUIHidden()
 	SetVisible(false);
 	
 	// Notify the options dialog that game UI is closing
-	if ( m_hOptionsDialog.Get() )
-	{
-		PostMessage( m_hOptionsDialog.Get(), new KeyValues( "GameUIHidden" ) );
-	}
+	// if ( m_hOptionsDialog.Get() )
+	// {
+	// 	PostMessage( m_hOptionsDialog.Get(), new KeyValues( "GameUIHidden" ), 0.0 );
+	// }
 
 	// Notify the in game menu that game UI is closing
 	CBaseModFrame *pInGameMainMenu = GetWindow( WT_INGAMEMAINMENU );
@@ -1356,7 +1420,7 @@ void CBaseModPanel::RunFrame()
 		bDoBlur = false;
 		break;
 	}
-	if ( GetWindow( WT_ATTRACTSCREEN ) || ( enginevguifuncs && !enginevguifuncs->IsGameUIVisible() ) )
+	if ( GetWindow( WT_ATTRACTSCREEN ) /* || ( enginevguifuncs && !enginevguifuncs->IsGameUIVisible() )*/ )
 	{
 		// attract screen might be open, but not topmost due to notification dialogs
 		bDoBlur = false;
@@ -1377,6 +1441,7 @@ void CBaseModPanel::RunFrame()
 		//engine->SetBlurFade( m_flBlurScale );
 	}
 
+#if 0
 	if ( IsX360() && m_ExitingFrameCount )
 	{
 		CTransitionScreen *pTransitionScreen = static_cast< CTransitionScreen* >( GetWindow( WT_TRANSITIONSCREEN ) );
@@ -1402,6 +1467,7 @@ void CBaseModPanel::RunFrame()
 			}
 		}
 	}
+#endif
 }
 
 //=============================================================================
@@ -1466,7 +1532,7 @@ void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProg
 
 		pLoadingProgress->SetPosterData( pMissionInfo, pChapterInfo, pPlayerNames, botFlags, chGameMode, levelName );
 	}
-	else if ( GameUI().IsInLevel() && !GameUI().IsInBackgroundLevel() )
+	else if (false)// if ( GameUI().IsInLevel() && !GameUI().IsInBackgroundLevel() )
 	{
 		// Transitions between levels 
 		type = LoadingProgress::LT_TRANSITION;
@@ -1537,7 +1603,7 @@ void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 	if ( !pFrame )
 	{
 		// no confirmation up, hide the UI
-		GameUI().HideGameUI();
+		// GameUI().HideGameUI();
 	}
 
 	// if we are loading into the lobby, then skip the UIActivation code path
@@ -1546,7 +1612,8 @@ void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 	{
 		// if we are loading into the front-end, then activate the main menu (or attract screen, depending on state)
 		// or if a message box is pending force open game ui
-		if ( GameUI().IsInBackgroundLevel() || pFrame )
+		// if ( GameUI().IsInBackgroundLevel() || pFrame )
+		if ( false )
 		{
 			GameUI().OnGameUIActivated();
 		}
@@ -1696,6 +1763,7 @@ static void BaseUI_PositionDialog(vgui::PHandle dlg)
 //=============================================================================
 void CBaseModPanel::OpenCreateMultiplayerGameDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hCreateMultiplayerGameDialog.Get() )
@@ -1706,11 +1774,13 @@ void CBaseModPanel::OpenCreateMultiplayerGameDialog( Panel *parent )
 		if ( m_hCreateMultiplayerGameDialog )
 			m_hCreateMultiplayerGameDialog->Activate();
 	}
+#endif
 }
 
 //=============================================================================
 void CBaseModPanel::OpenPlayerListDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hPlayerListDialog.Get() )
@@ -1721,11 +1791,13 @@ void CBaseModPanel::OpenPlayerListDialog( Panel *parent )
 
 		m_hPlayerListDialog->Activate();
 	}
+#endif
 }
 
 //=============================================================================
 void CBaseModPanel::OpenOptionsDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hOptionsDialog.Get() )
@@ -1736,11 +1808,13 @@ void CBaseModPanel::OpenOptionsDialog( Panel *parent )
 
 		m_hOptionsDialog->Activate();
 	}
+#endif
 }
 
 //=============================================================================
 void CBaseModPanel::OpenCustomizationDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hCustomizationDialog.Get() )
@@ -1751,12 +1825,14 @@ void CBaseModPanel::OpenCustomizationDialog( Panel *parent )
 
 		m_hCustomizationDialog->Activate();
 	}
+#endif
 }
 
 
 //=============================================================================
 void CBaseModPanel::OpenOptionsMouseDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hOptionsMouseDialog.Get() )
@@ -1767,11 +1843,13 @@ void CBaseModPanel::OpenOptionsMouseDialog( Panel *parent )
 
 		m_hOptionsMouseDialog->Activate();
 	}
+#endif
 }
 
 //=============================================================================
 void CBaseModPanel::OpenKeyBindingsDialog( Panel *parent )
 {
+#if 0
 	if ( IsPC() )
 	{			
 		if ( !m_hOptionsDialog.Get() )
@@ -1782,6 +1860,7 @@ void CBaseModPanel::OpenKeyBindingsDialog( Panel *parent )
 
 		m_hOptionsDialog->Activate();
 	}
+#endif
 }
 
 //=============================================================================
@@ -1963,9 +2042,10 @@ void CBaseModPanel::DrawCopyStats()
 //=============================================================================
 void CBaseModPanel::PaintBackground()
 {
-	if ( !m_LevelLoading &&
-		!GameUI().IsInLevel() &&
-		!GameUI().IsInBackgroundLevel() )
+	// if ( !m_LevelLoading &&
+	// 	!GameUI().IsInLevel() &&
+	// 	!GameUI().IsInBackgroundLevel() )
+	if (true)
 	{
 		int wide, tall;
 		GetSize( wide, tall );
@@ -1974,6 +2054,7 @@ void CBaseModPanel::PaintBackground()
 		{
 			ActivateBackgroundEffects();
 
+#if 0
 			if ( ASWBackgroundMovie() )
 			{
 				ASWBackgroundMovie()->Update();
@@ -2007,11 +2088,13 @@ void CBaseModPanel::PaintBackground()
 					}
 				}
 			}
+#endif
 		}
 		else
 		{
 			ActivateBackgroundEffects();
 
+#if 0
 			if ( ASWBackgroundMovie() )
 			{
 				ASWBackgroundMovie()->Update();
@@ -2087,6 +2170,7 @@ void CBaseModPanel::PaintBackground()
 					pRenderContext->PopMatrix();
 				}
 			}
+#endif
 		}
 	}
 
@@ -2442,7 +2526,7 @@ void CBaseModPanel::OnSetFocus()
 	BaseClass::OnSetFocus();
 	if ( IsPC() )
 	{
-		GameConsole().Hide();
+		// GameConsole().Hide();
 	}
 }
 
@@ -2450,7 +2534,7 @@ void CBaseModPanel::OnMovedPopupToFront()
 {
 	if ( IsPC() )
 	{
-		GameConsole().Hide();
+		// GameConsole().Hide();
 	}
 }
 
@@ -2599,6 +2683,7 @@ KeyValues *CBaseModPanel::GetConsoleControlSettings(void)
 //-----------------------------------------------------------------------------
 void CBaseModPanel::OnOpenNewGameDialog(const char *chapter)
 {
+#if 0
 	if ( !m_hNewGameDialog.Get() )
 	{
 		m_hNewGameDialog = new CNewGameDialog(this, false);
@@ -2612,6 +2697,7 @@ void CBaseModPanel::OnOpenNewGameDialog(const char *chapter)
 
 	((CNewGameDialog *)m_hNewGameDialog.Get())->SetCommentaryMode( false );
 	m_hNewGameDialog->Activate();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2619,6 +2705,7 @@ void CBaseModPanel::OnOpenNewGameDialog(const char *chapter)
 //-----------------------------------------------------------------------------
 void CBaseModPanel::OnOpenBonusMapsDialog(void)
 {
+#if 0
 	if ( !m_hBonusMapsDialog.Get() )
 	{
 		m_hBonusMapsDialog = new CBonusMapsDialog(this);
@@ -2626,6 +2713,7 @@ void CBaseModPanel::OnOpenBonusMapsDialog(void)
 	}
 
 	m_hBonusMapsDialog->Activate();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2633,12 +2721,14 @@ void CBaseModPanel::OnOpenBonusMapsDialog(void)
 //-----------------------------------------------------------------------------
 void CBaseModPanel::OnOpenLoadGameDialog()
 {
+#if 0
 	if ( !m_hLoadGameDialog.Get() )
 	{
 		m_hLoadGameDialog = new CLoadGameDialog(this);
 		PositionDialog( m_hLoadGameDialog );
 	}
 	m_hLoadGameDialog->Activate();
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2646,12 +2736,19 @@ void CBaseModPanel::OnOpenLoadGameDialog()
 //-----------------------------------------------------------------------------
 void CBaseModPanel::OnOpenSaveGameDialog()
 {
+#if 0
 	if ( !m_hSaveGameDialog.Get() )
 	{
 		m_hSaveGameDialog = new CSaveGameDialog(this);
 		PositionDialog( m_hSaveGameDialog );
 	}
 	m_hSaveGameDialog->Activate();
+#endif
+}
+
+void CBaseModPanel::CloseMessageDialog(const uint nType)
+{
+	m_MessageDialogHandler.CloseMessageDialog(nType);
 }
 
 //-----------------------------------------------------------------------------
@@ -3056,7 +3153,8 @@ CMessageDialogHandler::CMessageDialogHandler()
 void CMessageDialogHandler::ShowMessageDialog( int nType, vgui::Panel *pOwner )
 {
 	int iSimpleFrame = 0;
-	if ( ModInfo().IsSinglePlayerOnly() )
+	// if ( ModInfo().IsSinglePlayerOnly() )
+	if ( false )
 	{
 		iSimpleFrame = MD_SIMPLEFRAME;
 	}

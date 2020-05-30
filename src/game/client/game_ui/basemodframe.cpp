@@ -4,11 +4,13 @@
 //
 //=====================================================================================//
 
+#include "cbase.h"
+
 #include <ctype.h>
-#include <GameUI/basemodframe.h>
+#include "basemodframe.h"
 
 #include "BaseModPanel.h"
-#include "EngineInterface.h"
+// #include "EngineInterface.h"
 
 #include "VFooterPanel.h"
 #include "VGenericConfirmation.h"

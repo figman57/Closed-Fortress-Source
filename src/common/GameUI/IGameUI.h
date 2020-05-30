@@ -18,6 +18,8 @@
 #include "xbox/xboxstubs.h"
 #endif
 
+#include "IBasePanel.h"
+
 // reasons why the user can't connect to a game server
 enum ESteamLoginFailure
 {
@@ -115,9 +117,7 @@ public:
 	// Client DLL is telling us that a main menu command was issued, probably from its custom main menu panel
 	virtual void SendMainMenuCommand( const char *pszCommand ) = 0;
 
-// #ifdef OF_CLIENT
-	virtual void SetPanelOverride( int panelId, vgui::VPANEL panel ) = 0;
-// #endif
+	virtual void SetBasePanel(IBasePanel* basePanel) = 0;
 };
 
 #define GAMEUI_INTERFACE_VERSION "GameUI011"

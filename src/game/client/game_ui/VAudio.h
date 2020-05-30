@@ -10,7 +10,7 @@
 
 #include "basemodui.h"
 #include "VFlyoutMenu.h"
-#include "OptionsSubAudio.h"
+// #include "OptionsSubAudio.h"
 
 
 #define MAX_DYNAMIC_AUDIO_LANGUAGES 15
@@ -25,10 +25,12 @@ class DropDownMenu;
 class SliderControl;
 class BaseModHybridButton;
 
+/*
 struct AudioLangauge_t
 {
 	ELanguage languageCode;
 };
+*/
 
 
 class Audio : public CBaseModFrame, public FlyoutMenuListener
@@ -99,10 +101,10 @@ private:
 
 	BaseModHybridButton	*m_btn3rdPartyCredits;
 
-	ELanguage		m_nSelectedAudioLanguage;
-	ELanguage		m_nCurrentAudioLanguage;
-	int				m_nNumAudioLanguages;
-	AudioLangauge_t	m_nAudioLanguages[ MAX_DYNAMIC_AUDIO_LANGUAGES ];
+	// ELanguage		m_nSelectedAudioLanguage;
+	// ELanguage		m_nCurrentAudioLanguage;
+	// int				m_nNumAudioLanguages;
+	// AudioLangauge_t	m_nAudioLanguages[ MAX_DYNAMIC_AUDIO_LANGUAGES ];
 
 	vgui::DHANDLE<class COptionsSubAudioThirdPartyCreditsDlg> m_OptionsSubAudioThirdPartyCreditsDlg;
 

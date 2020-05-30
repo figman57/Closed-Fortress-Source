@@ -80,7 +80,7 @@ public:
 	virtual void SetMainMenuOverride(vgui::VPANEL panel);
 	virtual void SendMainMenuCommand(const char *pszCommand);
 
-	virtual void SetPanelOverride(int panelId, vgui::VPANEL panel);
+	virtual void SetBasePanel(IBasePanel * basePanel);
 
 	// progress
 	virtual bool UpdateProgressBar(float progress, const char *statusText);

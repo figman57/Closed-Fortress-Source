@@ -7,7 +7,6 @@
 #if 0
 
 #include "cbase.h"
-#include "EngineInterface.h"
 #include "VGenericPanelList.h"
 #include "iachievementmgr.h"
 #include "KeyValues.h"

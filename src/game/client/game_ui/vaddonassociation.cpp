@@ -11,8 +11,6 @@
 #include "vaddonassociation.h"
 #include "VGenericConfirmation.h"
 
-#include "EngineInterface.h"
-
 #include "vgui_controls/Label.h"
 #include "vgui/ISurface.h"
 

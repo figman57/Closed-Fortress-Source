@@ -14,22 +14,9 @@
 #include "vgui_controls/MenuItem.h"
 #include "vgui_controls/MessageDialog.h"
 #include "tier1/utllinkedlist.h"
-#include "OptionsDialog.h"
-#include "OptionsSubKeyboard.h"
-#include "OptionsSubMouse.h"
-#include "optionsmousedialog.h"
-#include "CreateMultiplayerGameDialog.h"
-#include "PlayerListDialog.h"
 
 #include <GameUI/gameui_shared.h>
 
-class COptionsDialog;
-class CCreateMultiplayerGameDialog;
-class COptionsMouseDialog;
-class IMaterial;
-class CMatchmakingBasePanel;
-class CBackgroundMenuButton;
-class CGameMenu;
 
 //=============================================================================
 //
@@ -65,19 +52,19 @@ public:
 	virtual void OnOpenBonusMapsDialog() = 0;
 	virtual void OnOpenLoadGameDialog() = 0;
 	virtual void OnOpenSaveGameDialog() = 0;
-	virtual void OnOpenServerBrowser() = 0;
-	virtual void OnOpenFriendsDialog() = 0;
-	virtual void OnOpenDemoDialog() = 0;
-	virtual void OnOpenCreateMultiplayerGameDialog() = 0;
-	virtual void OnOpenQuitConfirmationDialog() = 0;
-	virtual void OnOpenDisconnectConfirmationDialog() = 0;
-	virtual void OnOpenChangeGameDialog() = 0;
-	virtual void OnOpenPlayerListDialog() = 0;
-	virtual void OnOpenBenchmarkDialog() = 0;
-	virtual void OnOpenOptionsDialog() = 0;
-	virtual void OnOpenLoadCommentaryDialog() = 0;
-	virtual void OpenLoadSingleplayerCommentaryDialog() = 0;
-	virtual void OnOpenAchievementsDialog() = 0;
+	// virtual void OnOpenServerBrowser() = 0;
+	// virtual void OnOpenFriendsDialog() = 0;
+	// virtual void OnOpenDemoDialog() = 0;
+	// virtual void OnOpenCreateMultiplayerGameDialog() = 0;
+	// virtual void OnOpenQuitConfirmationDialog() = 0;
+	// virtual void OnOpenDisconnectConfirmationDialog() = 0;
+	// virtual void OnOpenChangeGameDialog() = 0;
+	// virtual void OnOpenPlayerListDialog() = 0;
+	// virtual void OnOpenBenchmarkDialog() = 0;
+	// virtual void OnOpenOptionsDialog() = 0;
+	// virtual void OnOpenLoadCommentaryDialog() = 0;
+	// virtual void OpenLoadSingleplayerCommentaryDialog() = 0;
+	// virtual void OnOpenAchievementsDialog() = 0;
 
 	//=============================================================================
 	// HPE_BEGIN:
@@ -85,50 +72,50 @@ public:
 	//=============================================================================
 
 	// $TODO(HPE): Move this to a game-specific location
-	virtual void OnOpenCSAchievementsDialog() = 0;
+	// virtual void OnOpenCSAchievementsDialog() = 0;
 
 	//=============================================================================
 	// HPE_END
 	//=============================================================================
 
-	virtual void OnOpenControllerDialog() = 0;
+	// virtual void OnOpenControllerDialog() = 0;
 
-	virtual void SessionNotification(const int notification, const int param = 0) = 0;
-	virtual void SystemNotification(const int notification) = 0;
-	virtual void ShowMessageDialog(const uint nType, vgui::Panel *pParent = NULL) = 0;
+	// virtual void SessionNotification(const int notification, const int param = 0) = 0;
+	// virtual void SystemNotification(const int notification) = 0;
+	// virtual void ShowMessageDialog(const uint nType, vgui::Panel *pParent = NULL) = 0;
 	virtual void CloseMessageDialog(const uint nType) = 0;
-	virtual void UpdatePlayerInfo(uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost) = 0;
-	virtual void SessionSearchResult(int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping) = 0;
-	virtual void OnChangeStorageDevice() = 0;
-	virtual bool ValidateStorageDevice() = 0;
-	virtual bool ValidateStorageDevice(int *pStorageDeviceValidated) = 0;
-	virtual void OnCreditsFinished() = 0;
+	// virtual void UpdatePlayerInfo(uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost) = 0;
+	// virtual void SessionSearchResult(int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping) = 0;
+	// virtual void OnChangeStorageDevice() = 0;
+	// virtual bool ValidateStorageDevice() = 0;
+	// virtual bool ValidateStorageDevice(int *pStorageDeviceValidated) = 0;
+	// virtual void OnCreditsFinished() = 0;
 
 	virtual KeyValues *GetConsoleControlSettings(void) = 0;
-
-	// forces any changed options dialog settings to be applied immediately, if it's open
-	virtual void ApplyOptionsDialogSettings() = 0;
-
-	// virtual vgui::AnimationController *GetAnimationController(void) { return m_pConsoleAnimationController; }
+	// 
+	// // forces any changed options dialog settings to be applied immediately, if it's open
+	// virtual void ApplyOptionsDialogSettings() = 0;
+	// 
+	// // virtual vgui::AnimationController *GetAnimationController(void) { return m_pConsoleAnimationController; }
 	virtual void RunCloseAnimation(const char *animName) = 0;
-	virtual void RunAnimationWithCallback(vgui::Panel *parent, const char *animName, KeyValues *msgFunc) = 0;
-	virtual void PositionDialog(vgui::PHandle dlg) = 0;
-
-	virtual void ArmFirstMenuItem(void) = 0;
-
+	// virtual void RunAnimationWithCallback(vgui::Panel *parent, const char *animName, KeyValues *msgFunc) = 0;
+	// virtual void PositionDialog(vgui::PHandle dlg) = 0;
+	// 
+	// virtual void ArmFirstMenuItem(void) = 0;
+	// 
 	virtual void OnGameUIHidden() = 0;
-
-	virtual void CloseBaseDialogs(void) = 0;
-	// virtual bool IsWaitingForConsoleUI(void) { return m_bWaitingForStorageDeviceHandle || m_bWaitingForUserSignIn || m_bXUIVisible; }
-
-	virtual int  GetMenuAlpha(void) = 0;
-
-	virtual void SetMainMenuOverride(vgui::VPANEL panel) = 0;
-	
-	// FIXME: This should probably become a friend relationship between the classes
-	virtual bool HandleSignInRequest(const char *command) = 0;
-	virtual bool HandleStorageDeviceRequest(const char *command) = 0;
-	virtual void ClearPostPromptCommand(const char *pCompletedCommand) = 0;
+	// 
+	// virtual void CloseBaseDialogs(void) = 0;
+	// // virtual bool IsWaitingForConsoleUI(void) { return m_bWaitingForStorageDeviceHandle || m_bWaitingForUserSignIn || m_bXUIVisible; }
+	// 
+	// virtual int  GetMenuAlpha(void) = 0;
+	// 
+	// virtual void SetMainMenuOverride(vgui::VPANEL panel) = 0;
+	// 
+	// // FIXME: This should probably become a friend relationship between the classes
+	// virtual bool HandleSignInRequest(const char *command) = 0;
+	// virtual bool HandleStorageDeviceRequest(const char *command) = 0;
+	// virtual void ClearPostPromptCommand(const char *pCompletedCommand) = 0;
 };
 
 #endif

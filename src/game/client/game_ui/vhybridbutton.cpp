@@ -9,7 +9,6 @@
 #include "BaseModPanel.h"
 #include "VFooterPanel.h"
 #include "VFlyoutMenu.h"
-#include "EngineInterface.h"
 #include "vgui/ISurface.h"
 #include "vgui_controls/Tooltip.h"
 #include "vgui/IVGui.h"
