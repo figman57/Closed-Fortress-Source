@@ -75,16 +75,16 @@
 /*
 #include "BaseModPanel.h"
 #include "basemodui.h"
-typedef BaseModUI::CBaseModPanel UI_BASEMOD_PANEL_CLASS;
-inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
-inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return * new UI_BASEMOD_PANEL_CLASS(); }
+typedef BaseModUI::CBaseModPanel UI_BASE_PANEL_CLASS;
+inline UI_BASE_PANEL_CLASS & GetBasePanel() { return UI_BASE_PANEL_CLASS::GetSingleton(); }
+inline UI_BASE_PANEL_CLASS & ConstructGetBasePanel() { return * new UI_BASE_PANEL_CLASS(); }
 using namespace BaseModUI;
 */
 
 #include "BasePanel.h"
-typedef CBasePanel UI_BASEMOD_PANEL_CLASS;
-inline UI_BASEMOD_PANEL_CLASS & GetUiBaseModPanelClass() { return UI_BASEMOD_PANEL_CLASS::GetSingleton(); }
-inline UI_BASEMOD_PANEL_CLASS & ConstructUiBaseModPanelClass() { return *new UI_BASEMOD_PANEL_CLASS(); }
+typedef IBasePanel UI_BASE_PANEL_CLASS;
+inline UI_BASE_PANEL_CLASS & GetBasePanel() { return *BasePanel(); }
+inline UI_BASE_PANEL_CLASS & ConstructGetBasePanel() { return *new CBasePanel(); }
 
 ConVar of_pausegame( "of_pausegame", "0", FCVAR_ARCHIVE | FCVAR_REPLICATED, "If set, pauses whenever you open the in game menu." );;
 
@@ -152,7 +152,7 @@ CGameUI &GameUI()
 //-----------------------------------------------------------------------------
 vgui::VPANEL GetGameUIBasePanel()
 {
-	return GetUiBaseModPanelClass().GetVPanel();
+	return GetBasePanel().GetVguiPanel().GetVPanel();
 }
 
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameUI, IGameUI, GAMEUI_INTERFACE_VERSION, g_GameUI);
@@ -267,7 +267,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	}
 
 	// setup base panel
-	UI_BASEMOD_PANEL_CLASS& factoryBasePanel = ConstructUiBaseModPanelClass(); // explicit singleton instantiation
+	vgui::Panel& factoryBasePanel = ConstructGetBasePanel().GetVguiPanel(); // explicit singleton instantiation
 
 	factoryBasePanel.SetBounds( 0, 0, 640, 480 );
 	factoryBasePanel.SetPaintBorderEnabled( false );
@@ -660,9 +660,9 @@ void CGameUI::OnGameUIActivated()
 
 	SetSavedThisMenuSession( false );
 
-	UI_BASEMOD_PANEL_CLASS &ui = GetUiBaseModPanelClass();
+	UI_BASE_PANEL_CLASS &ui = GetBasePanel();
 	bool bNeedActivation = true;
-	if ( ui.IsVisible() )
+	if ( ui.GetVguiPanel().IsVisible() )
 	{
 		// Already visible, maybe don't need activation
 		if ( !IsInLevel() && IsInBackgroundLevel() )
@@ -670,7 +670,7 @@ void CGameUI::OnGameUIActivated()
 	}
 	if ( bNeedActivation )
 	{
-		GetUiBaseModPanelClass().OnGameUIActivated();
+		GetBasePanel().OnGameUIActivated();
 	}
 }
 
@@ -685,7 +685,7 @@ void CGameUI::OnGameUIHidden()
 	// unpause the game when leaving the UI
 	engine->ClientCmd_Unrestricted( "unpause nomsg" );
 
-	GetUiBaseModPanelClass().OnGameUIHidden();
+	GetBasePanel().OnGameUIHidden();
 }
 
 //-----------------------------------------------------------------------------
@@ -711,13 +711,13 @@ void CGameUI::RunFrame()
 #else
 	vgui::surface()->GetScreenSize(wide, tall);
 
-	GetUiBaseModPanelClass().SetSize(wide, tall);
+	GetBasePanel().GetVguiPanel().SetSize(wide, tall);
 #endif
 
 	// Run frames
 	g_VModuleLoader.RunFrame();
 
-	GetUiBaseModPanelClass().RunFrame();
+	GetBasePanel().RunFrame();
 
 	// Play the start-up music the first time we run frame
 	if ( IsPC() && m_iPlayGameStartupSound > 0 )
@@ -870,7 +870,7 @@ void CGameUI::OnLevelLoadingStarted( bool bShowProgressDialog )
 {
 	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingStarted" ) );
 
-	GetUiBaseModPanelClass().OnLevelLoadingStarted();// ( NULL, bShowProgressDialog );
+	GetBasePanel().OnLevelLoadingStarted( NULL, bShowProgressDialog );
 
 	ShowLoadingBackgroundDialog();
 
@@ -895,7 +895,7 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 
 	// Need to call this function in the Base mod Panel to let it know that we've finished loading the level
 	// This should fix the loading screen not disappearing.
-	GetUiBaseModPanelClass().OnLevelLoadingFinished();// (new KeyValues("LoadingFinished"));
+	GetBasePanel().OnLevelLoadingFinished(new KeyValues("LoadingFinished"));
 
 	HideLoadingBackgroundDialog();
 
@@ -908,10 +908,8 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 //-----------------------------------------------------------------------------
 bool CGameUI::UpdateProgressBar(float progress, const char *statusText)
 {
-	// return GetUiBaseModPanelClass().UpdateProgressBar(progress, statusText);
-	return true;
+	return GetBasePanel().UpdateProgressBar(progress, statusText);
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1151,7 +1149,7 @@ void CGameUI::ShowLoadingBackgroundDialog()
 {
 	if ( g_hLoadingBackgroundDialog )
 	{
-		vgui::VPANEL panel = GetUiBaseModPanelClass().GetVPanel();
+		vgui::VPANEL panel = GetBasePanel().GetVguiPanel().GetVPanel();
 
 		vgui::ipanel()->SetParent( g_hLoadingBackgroundDialog, panel );
 		vgui::ipanel()->MoveToFront( g_hLoadingBackgroundDialog );
@@ -1213,7 +1211,7 @@ void CGameUI::SetProgressOnStart()
 #if defined( _X360 ) && defined( _DEMO )
 void CGameUI::OnDemoTimeout()
 {
-	GetUiBaseModPanelClass().OnDemoTimeout();
+	GetBasePanel().OnDemoTimeout();
 }
 #endif
 

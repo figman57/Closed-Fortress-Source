@@ -548,12 +548,10 @@ void CNewGameDialog::Activate( void )
 
 	if ( GameUI().IsConsoleUI() )
 	{
-#if 0
 		// Stop blinking the menu item now that we've seen the unlocked stuff
-		BaseModUI::CBaseModPanel *pBasePanel = BaseModUI::BasePanel();
+		IBasePanel *pBasePanel = BasePanel();
 		if ( pBasePanel )
 			pBasePanel->SetMenuItemBlinkingState( "OpenNewGameDialog", false );
-#endif
 
 		BonusMapsDatabase()->SetBlink( false );
 	}

@@ -1037,7 +1037,7 @@ void CSaveGameBrowserDialog::OnClose( void )
 void CSaveGameBrowserDialog::RefreshSaveGames( void )
 {
 	// Close any pending messages
-	//BasePanel()->CloseMessageDialog( DIALOG_STACK_IDX_WARNING );
+	BasePanel()->CloseMessageDialog( DIALOG_STACK_IDX_WARNING );
 
 	// Don't leave us in a locked state
 	SetControlDisabled( false );

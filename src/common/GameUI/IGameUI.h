@@ -13,7 +13,6 @@
 
 #include "interface.h"
 #include "vgui/IPanel.h"
-#include "basemodframe.h"
 
 #if !defined( _X360 )
 #include "xbox/xboxstubs.h"
