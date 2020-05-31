@@ -256,9 +256,9 @@ CBonusMapsDialog::CBonusMapsDialog(vgui::Panel *parent) : BaseClass(parent, "Bon
 	LoadControlSettings("resource/BonusMapsDialog.res");
 
 	// Stop blinking the bonus maps menu item
-	IBasePanel *pBasePanel = BasePanel();
-	if ( pBasePanel )
-		pBasePanel->SetMenuItemBlinkingState( "OpenBonusMapsDialog", false );
+	// IBasePanel *pBasePanel = BasePanel();
+	// if ( pBasePanel )
+	// 	pBasePanel->SetMenuItemBlinkingState( "OpenBonusMapsDialog", false );
 
 	BonusMapsDatabase()->SetBlink( false );
 }

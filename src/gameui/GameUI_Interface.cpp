@@ -81,6 +81,8 @@ ConVar ui_scaling("ui_scaling", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Scales VG
 #include "engine/IEngineSound.h"
 #include "gameui_util.h"
 
+#include "vgui_controls/AnimationController.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -724,6 +726,8 @@ void CGameUI::RunFrame()
 	{
 		ui->RunFrame();
 	}
+	
+	vgui::GetAnimationController()->UpdateAnimations(Plat_FloatTime());
 
 	// Play the start-up music the first time we run frame
 	if ( IsPC() && m_iPlayGameStartupSound > 0 )

@@ -1175,7 +1175,7 @@ void COptionsSubVideo::OpenAdvanced()
 {
 	if ( !m_hOptionsSubVideoAdvancedDlg.Get() )
 	{
-		m_hOptionsSubVideoAdvancedDlg = new COptionsSubVideoAdvancedDlg( BasePanel()->GetVguiPanel().FindChildByName( "OptionsDialog" ) ); // we'll parent this to the OptionsDialog directly
+		// m_hOptionsSubVideoAdvancedDlg = new COptionsSubVideoAdvancedDlg( BasePanel()->GetVguiPanel().FindChildByName( "OptionsDialog" ) ); // we'll parent this to the OptionsDialog directly
 	}
 
 	m_hOptionsSubVideoAdvancedDlg->Activate();
