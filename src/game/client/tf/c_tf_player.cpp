@@ -216,7 +216,7 @@ void OnWeaponEquip( const CCommand& args, KeyValues *pClass )
 	if( !pValue )
 		return;
 
-	// DMLoadout *pDMLoadout = static_cast<DMLoadout*>(BaseModUI::CBaseModPanel::GetSingleton().GetWindow(BaseModUI::WT_DM_LOADOUT));
+	BaseModUI::DMLoadout *pDMLoadout = static_cast<BaseModUI::DMLoadout*>(BaseModUI::CBaseModPanel::GetSingleton().GetWindow(BaseModUI::WT_DM_LOADOUT));
 	
 	KeyValues *pWeapons = GetLoadout()->FindKey("Weapons");
 	if( pWeapons )
@@ -229,9 +229,9 @@ void OnWeaponEquip( const CCommand& args, KeyValues *pClass )
 			if( !Q_strcmp( args[3], szOtherWeapon ) )
 			{
 				pLoadoutClass->SetString( VarArgs( "%d", iOtherSlot), pLoadoutClass->GetString( args[4] ) );
-				// if(pDMLoadout)
+				if(pDMLoadout)
 				{
-					//pDMLoadout->SelectWeapon( iOtherSlot, pLoadoutClass->GetString(args[4]), true );
+					pDMLoadout->SelectWeapon( iOtherSlot, pLoadoutClass->GetString(args[4]), true );
 				}
 			}
 		}
@@ -241,8 +241,10 @@ void OnWeaponEquip( const CCommand& args, KeyValues *pClass )
 
 	GetLoadout()->SaveToFile( filesystem, "cfg/loadout.cfg" );
 
-	//if(pDMLoadout)
-	//	pDMLoadout->SelectWeapon( atoi(args[4]), args[3] );
+	if (pDMLoadout)
+	{
+		pDMLoadout->SelectWeapon(atoi(args[4]), args[3]);
+	}
 
 	RefreshDesiredWeapons( GetClassIndexFromString( args[2], TF_CLASS_COUNT_ALL ) );		
 }

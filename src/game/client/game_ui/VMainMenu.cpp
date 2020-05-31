@@ -43,6 +43,8 @@
 #include "tier0/icommandline.h"
 #include "fmtstr.h"
 
+#include <IVGuiModuleLoader.h>
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -928,13 +930,17 @@ void MainMenu::OpenServerBrowser()
 
 CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 {
-#if 0
 	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
 	if ( isSteam )
 	{
+		static CDllDemandLoader g_GameUIDLL("GameUI");
+		CreateInterfaceFn gameUIFactory = g_GameUIDLL.GetFactory();
+		IVGuiModuleLoader& g_VModuleLoader = *((IVGuiModuleLoader *)gameUIFactory(VGUIMODULELOADER_INTERFACE_VERSION, NULL));
+
 		// show the server browser
 		g_VModuleLoader.ActivateModule("Servers");
 
+#if 0
 		// if an argument was passed, that's the tab index to show, send a message to server browser to switch to that tab
 		if ( args.ArgC() > 1 )
 		{
@@ -947,7 +953,7 @@ CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
 		KeyValues *pSchemeKV = new KeyValues( "SetCustomScheme" );
 		pSchemeKV->SetString( "SchemeName", "SwarmServerBrowserScheme" );
 		g_VModuleLoader.PostMessageToAllModules( pSchemeKV );
+#endif
 
 	}
-#endif
 }

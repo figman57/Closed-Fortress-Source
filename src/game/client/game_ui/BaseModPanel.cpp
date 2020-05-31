@@ -3739,7 +3739,6 @@ static char *g_rgValidCommands[] =
 	"OpenSaveGameDialog",
 	"OpenCustomMapsDialog",
 	"OpenOptionsDialog",
-	"OpenCustomizationDialog", // TODO: remove this when loadout is added!
 	"OpenBenchmarkDialog",
 	"OpenFriendsDialog",
 	"OpenLoadDemoDialog",

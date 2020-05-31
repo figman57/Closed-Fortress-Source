@@ -43,6 +43,8 @@ using namespace BaseModUI;
 using namespace vgui;
 
 extern ConVar of_tennisball;
+extern ConVar of_respawn_particle;
+extern ConVar of_announcer_override;
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -55,9 +57,7 @@ DMLoadout::DMLoadout(Panel *parent, const char *panelName) : BaseClass(parent, p
 
 	SetUpperGarnishEnabled(true);
 	SetLowerGarnishEnabled(true);
-
-	Q_snprintf(m_ResourceName, sizeof(m_ResourceName), "resource/ui/Loadout.res");
-
+	
 	///
 	m_pCloseButton = new Button( this, "CloseButton", "" );	
 	pCosmeticPanel = new EditablePanel( this, "CosmeticPanel" );
@@ -86,9 +86,6 @@ DMLoadout::DMLoadout(Panel *parent, const char *panelName) : BaseClass(parent, p
 	m_bParsedParticles = false;
 }
 
-extern ConVar of_respawn_particle;
-extern ConVar of_announcer_override;
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -97,11 +94,10 @@ void DMLoadout::ApplySettings( KeyValues *inResourceData )
 	InitLoadoutHandle();
 	BaseClass::ApplySettings( inResourceData );
 	
-	KeyValues *inNewResourceData = new KeyValues("ResourceData");
-	
-	if( !inNewResourceData->LoadFromFile( filesystem, "resource/ui/Loadout.res" ) )
+	KeyValues *inNewResourceData = new KeyValues("ResourceData");	
+	if( !inNewResourceData->LoadFromFile( filesystem, m_ResourceName) )
 		return;	
-	
+		
 	KeyValues *inCosmeticPanel = inNewResourceData->FindKey("CosmeticPanel");
 	if( !inCosmeticPanel )
 		return;
@@ -499,9 +495,7 @@ void DMLoadout::ApplySchemeSettings(IScheme *pScheme)
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_bControlsLoaded = true;
-
-	// SetVisible( false );
-
+	
 	// required for new style
 	SetPaintBackgroundEnabled(true);
 	// SetupAsDialogStyle();
