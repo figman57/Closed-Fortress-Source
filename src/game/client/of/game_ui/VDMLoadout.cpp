@@ -26,6 +26,9 @@
 #include "cvartogglecheckbutton.h"
 #include "datacache/imdlcache.h"
 
+#include "of_commandbutton.h"
+#include "of_editablebutton.h"
+
 #include "VDMLoadout.h"
 
 #include "engine/IEngineSound.h"
@@ -76,13 +79,11 @@ DMLoadout::DMLoadout(Panel *parent, const char *panelName) : BaseClass(parent, p
 	}
 
 	m_pItemHeader = new CTFLoadoutHeader( pCosmeticPanel, "ItemHeader" );
-	m_pClassModel = new CTFModelPanel( this, "classmodelpanel" );
+	m_pClassModel = new vgui::DMModelPanel( this, "classmodelpanel" );
 	
 	m_bControlsLoaded = false;
 	m_bInteractive = false;
 	m_pSelectedOptions = NULL;
-	m_bUpdateCosmetics = true;
-	m_bTennisball = false;
 	m_bParsedParticles = false;
 }
 
@@ -139,7 +140,28 @@ void DMLoadout::ApplySettings( KeyValues *inResourceData )
 		
 		if( bExists )
 		{
-			m_pItemCategories[iExistingLocation]->AddItem(atoi(pLoop->GetName()));
+			int iID = atoi(pLoop->GetName());
+			bool bSelected = false;
+			if (GetLoadout())
+			{
+				KeyValues *kvCosmetics = GetLoadout()->FindKey("Cosmetics");
+				if (kvCosmetics)
+				{
+					KeyValues *kvMerc = kvCosmetics->FindKey("mercenary");
+					if (kvMerc)
+					{
+						if (iID == kvMerc->GetInt(m_pItemCategories[iExistingLocation]->szCategoryName)) 
+						{
+							bSelected = true;
+							if (m_pClassModel)
+							{
+								m_pClassModel->SetCosmetic(iID, bSelected);
+							}
+						}
+					}
+				}
+			}
+			m_pItemCategories[iExistingLocation]->AddItem(iID, bSelected);
 		}
 		else
 		{
@@ -148,7 +170,7 @@ void DMLoadout::ApplySettings( KeyValues *inResourceData )
 			pNew->ApplySettings(inCosmeticPanel->FindKey("ListTemplate"));
 			Q_strncpy(pNew->szCategoryName, pLoop->GetString("region"), sizeof(pNew->szCategoryName));
 			m_pItemCategories.AddToTail(pNew);
-			m_pItemCategories[m_pItemCategories.Count()-1]->AddItem(atoi(pLoop->GetName()));
+			m_pItemCategories[m_pItemCategories.Count()-1]->AddItem(atoi(pLoop->GetName()), false);
 			m_pItemHeader->AddCategory(pLoop->GetString("region"));
 			if( m_pItemCategories.Count() > 0 )
 			{
@@ -508,15 +530,6 @@ void DMLoadout::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	// Set the animation.
-	if ( m_pClassModel )
-	{
-		// m_pClassModel->SetAnimationIndex( ACT_MERC_LOADOUT );
-		// m_pClassModel->SetModelName( "models/player/mercenary.mdl", 4 );
-		m_pClassModel->Update();
-	}
-	
-	m_iCurrentParticle = of_respawn_particle.GetInt();
 }
 
 #define QUICK_CVAR(x) ConVar x(#x, "0", FCVAR_NONE);
@@ -527,76 +540,6 @@ void DMLoadout::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( !m_pClassModel )
-		return;
-
-	if( m_iCurrentParticle != of_respawn_particle.GetInt() )
-	{
-		m_iCurrentParticle = of_respawn_particle.GetInt();
-
-		KeyValues *pParticle = GetRespawnParticle( m_iCurrentParticle );
-		if( pParticle )
-		{
-			GetClassModel()->m_flParticleZOffset = pParticle->GetFloat( "particle_z_offset", 0.0f );
-		}
-		
-		char pEffectName[32];
-		pEffectName[0] = '\0';
-		if ( m_iCurrentParticle < 10 )
-			Q_snprintf( pEffectName, sizeof( pEffectName ), "dm_respawn_0%d", m_iCurrentParticle );
-		else
-			Q_snprintf( pEffectName, sizeof( pEffectName ), "dm_respawn_%d", m_iCurrentParticle );
-		if ( pEffectName[0] != '\0' )
-			GetClassModel()->SetParticleName(pEffectName);
-		
-	}
-
-	if( of_tennisball.GetBool() != m_bTennisball )
-	{
-		m_bTennisball = of_tennisball.GetBool();
-		m_pClassModel->m_BMPResData.m_nSkin = m_bTennisball ? 6 : 4;
-		m_pClassModel->Update();
-	}
-
-	if( m_bUpdateCosmetics )
-	{
-		if( !m_pClassModel->GetModelPtr()->IsValid() ) 
-			return;
-
-		m_pClassModel->ClearMergeMDLs();
-		for( int i = 0; i < m_pClassModel->GetNumBodyGroups(); i++ )
-		{
-			m_pClassModel->SetBodygroup(i, 0);
-		}
-		// Set the animation.
-		m_pClassModel->SetMergeMDL( "models/weapons/w_models/w_supershotgun.mdl", NULL, 2 );
-		for( int i = 0; i < m_iCosmetics.Count(); i++ )
-		{
-			KeyValues *pCosmetic = GetCosmetic( m_iCosmetics[i] );
-			if( pCosmetic )
-			{
-				if( strcmp( pCosmetic->GetString("model"), "BLANK" ) && strcmp( pCosmetic->GetString("model"), "" ) )
-					GetClassModel()->SetMergeMDL( pCosmetic->GetString("model"), NULL, 2 );
-
-				KeyValues* pBodygroups = pCosmetic->FindKey("Bodygroups");
-				if( pBodygroups )
-				{
-					for ( KeyValues *sub = pBodygroups->GetFirstValue(); sub; sub = sub->GetNextValue() )
-					{
-						int m_Bodygroup = m_pClassModel->FindBodygroupByName( sub->GetName() );
-						if ( m_Bodygroup >= 0 )
-						{
-							m_pClassModel->SetBodygroup(m_Bodygroup, sub->GetInt());
-						}
-					}
-				}
-				
-			}
-		}
-		m_pClassModel->Update();
-		
-		m_bUpdateCosmetics = false;
-	}
 }
 
 void DMLoadout::SelectWeapon( int iSlot, const char *szWeapon, bool bChangeSelection )

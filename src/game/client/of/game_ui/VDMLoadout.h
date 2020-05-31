@@ -17,7 +17,10 @@
 #include "basemodel_panel.h"
 #include <vgui_controls/Slider.h>
 
-#include "of_controls.h"
+#include "of_loadoutheader.h"
+#include "of_dmmodelpanel.h"
+#include "of_scrollablepanellist.h"
+#include "of_selectionpanel.h"
 
 class CStudioHdr;
 class CCvarToggleCheckButton;
@@ -39,8 +42,7 @@ namespace BaseModUI {
 		virtual void PerformLayout();
 		virtual void PaintBackground();
 		void SelectWeapon(int iSlot, const char *szWeapon, bool bChangeSelection = false);
-		vgui::CTFModelPanel *GetClassModel() { return m_pClassModel; };
-
+		// vgui::CTFModelPanel *GetClassModel() { return m_pClassModel; };
 		vgui::EditablePanel *GetArsenalPanel() { return pArsenalPanel; };
 	private:
 
@@ -61,19 +63,19 @@ namespace BaseModUI {
 
 		CTFScrollablePanelList *pWeaponList[3];
 
-		vgui::CTFModelPanel *m_pClassModel;
+		vgui::DMModelPanel *m_pClassModel;
 
 		bool m_bInteractive;							// are we in interactive mode
 		bool m_bControlsLoaded;							// have we loaded controls yet
-		bool m_bTennisball;
+		// bool m_bTennisball;
 
 		bool m_bParsedParticles; // this is only used so that particles dont crash 
 								 // the memory when we reload the panel
 	public:
 		CTFSelectionPanel *m_pSelectedOptions;
-		CUtlVector<int> m_iCosmetics;
-		bool m_bUpdateCosmetics;
-		int m_iCurrentParticle;
+		// CUtlVector<int> m_iCosmetics;
+		// bool m_bUpdateCosmetics;
+		// int m_iCurrentParticle;
 	};
 }
 
