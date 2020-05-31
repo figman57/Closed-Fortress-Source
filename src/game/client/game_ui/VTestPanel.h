@@ -4,8 +4,8 @@
 //
 //=====================================================================================//
 
-#ifndef __VTestPanel1_H__
-#define __VTestPanel1_H__
+#ifndef __VTestPanel_H__
+#define __VTestPanel_H__
 
 
 #include "basemodui.h"
@@ -18,13 +18,13 @@ class DropDownMenu;
 class SliderControl;
 class BaseModHybridButton;
 
-class TestPanel1 : public CBaseModFrame
+class TestPanel : public CBaseModFrame
 {
-	DECLARE_CLASS_SIMPLE( TestPanel1, CBaseModFrame );
+	DECLARE_CLASS_SIMPLE( TestPanel, CBaseModFrame );
 
 public:
-	TestPanel1(vgui::Panel *parent, const char *panelName);
-	~TestPanel1();
+	TestPanel(vgui::Panel *parent, const char *panelName);
+	~TestPanel();
 
 protected:
 	virtual void PaintBackground();
@@ -34,4 +34,4 @@ protected:
 
 };
 
-#endif // __VTestPanel1_H__
+#endif // __VTestPanel_H__

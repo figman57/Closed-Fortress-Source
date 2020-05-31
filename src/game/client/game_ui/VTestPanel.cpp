@@ -27,7 +27,7 @@ using namespace vgui;
 using namespace BaseModUI;
 
 //=============================================================================
-TestPanel1::TestPanel1(Panel *parent, const char *panelName): BaseClass(parent, panelName)
+TestPanel::TestPanel(Panel *parent, const char *panelName): BaseClass(parent, panelName)
 {
 	// SetDeleteSelfOnClose(true);
 
@@ -40,14 +40,14 @@ TestPanel1::TestPanel1(Panel *parent, const char *panelName): BaseClass(parent, 
 }
 
 //=============================================================================
-TestPanel1::~TestPanel1()
+TestPanel::~TestPanel()
 {
 	// engine->ExecuteClientCmd("gameui_allowescape");
 }
 
 
 //=============================================================================
-void TestPanel1::OnCommand(const char *command)
+void TestPanel::OnCommand(const char *command)
 {
 	if( Q_stricmp( "Back", command ) == 0 )
 	{
@@ -64,13 +64,13 @@ void TestPanel1::OnCommand(const char *command)
 	}
 }
 
-void TestPanel1::PaintBackground()
+void TestPanel::PaintBackground()
 {
 	// BaseClass::PaintBackground();
-	BaseClass::DrawDialogBackground( "#L4D360UI_TestPanel1", NULL, "#L4D360UI_Controller_Desc", NULL, NULL, true );
+	BaseClass::DrawDialogBackground( "#L4D360UI_TestPanel", NULL, "#L4D360UI_Controller_Desc", NULL, NULL, true );
 }
 
-void TestPanel1::ApplySchemeSettings( vgui::IScheme *pScheme )
+void TestPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 

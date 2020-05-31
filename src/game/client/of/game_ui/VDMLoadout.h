@@ -1,35 +1,80 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+ï»¿//========= Copyright ï¿½ 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
-//=====================================================================================//
+// $NoKeywords: $
+//=============================================================================
 
-#ifndef __VTestPanel2_H__
-#define __VTestPanel2_H__
+#ifndef OF_LOADOUT_H
+#define OF_LOADOUT_H
+#ifdef _WIN32
+#pragma once
+#endif
 
-#include "game_ui\basemodui.h"
-#include "game_ui\VFlyoutMenu.h"
+#include "game_ui/basemodui.h"
+
+#include "tf_controls.h"
+#include "basemodel_panel.h"
+#include <vgui_controls/Slider.h>
+
+#include "of_controls.h"
+
+class CStudioHdr;
+class CCvarToggleCheckButton;
+class CModelPanel;
 
 namespace BaseModUI {
 
-class DropDownMenu;
-class SliderControl;
-class BaseModHybridButton;
+	class DMLoadout : public CBaseModFrame
+	{
+	private:
+		DECLARE_CLASS_SIMPLE(DMLoadout, CBaseModFrame);
 
-class DMLoadout : public CBaseModFrame
-{
-	DECLARE_CLASS_SIMPLE( DMLoadout, CBaseModFrame );
+	public:
+		DMLoadout(Panel *parent, const char *panelName);
 
-public:
-	DMLoadout(vgui::Panel *parent, const char *panelName);
-	~DMLoadout();
+		virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+		virtual void ApplySettings(KeyValues* inResourceData);
+		virtual void OnCommand(const char * command);
+		virtual void PerformLayout();
+		virtual void PaintBackground();
+		void SelectWeapon(int iSlot, const char *szWeapon, bool bChangeSelection = false);
+		vgui::CTFModelPanel *GetClassModel() { return m_pClassModel; };
 
-protected:
-	virtual void PaintBackground();
-	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
-	virtual void OnCommand( const char *command );
-};
+		vgui::EditablePanel *GetArsenalPanel() { return pArsenalPanel; };
+	private:
 
-};
+		vgui::Button *m_pNextTipButton;
+		vgui::Button *m_pCloseButton;
 
-#endif // __VDMLoadout_H__
+		CUtlVector<CTFScrollableItemList*> m_pItemCategories;
+		CTFLoadoutHeader *m_pItemHeader;
+		vgui::EditablePanel *pCosmeticPanel;
+		vgui::EditablePanel *pArsenalPanel;
+		vgui::EditablePanel *pVisualPanel;
+		CTFScrollablePanelList *pParticleList;
+		CTFScrollablePanelList *pAnnouncerList;
+
+		CTFSelectionPanel *pPrimaryToggle;
+		CTFSelectionPanel *pSecondaryToggle;
+		CTFSelectionPanel *pMeleeToggle;
+
+		CTFScrollablePanelList *pWeaponList[3];
+
+		vgui::CTFModelPanel *m_pClassModel;
+
+		bool m_bInteractive;							// are we in interactive mode
+		bool m_bControlsLoaded;							// have we loaded controls yet
+		bool m_bTennisball;
+
+		bool m_bParsedParticles; // this is only used so that particles dont crash 
+								 // the memory when we reload the panel
+	public:
+		CTFSelectionPanel *m_pSelectedOptions;
+		CUtlVector<int> m_iCosmetics;
+		bool m_bUpdateCosmetics;
+		int m_iCurrentParticle;
+	};
+}
+
+#endif // OF_LOADOUT_H

@@ -39,6 +39,9 @@
 
 #include "tier0/dbg.h"
 
+#include "game_ui/BaseModPanel.h"
+#include "of/game_ui/VDMLoadout.h"
+
 using namespace vgui;
 
 // "Simple" function to convert Hue Saturation and Brightness to RGB
@@ -727,28 +730,27 @@ void CTFItemSelection::SetSelected( bool bSelected )
 	else
 		Q_strncpy(szCommand, VarArgs("loadout_unequip cosmetics mercenary %d", iItemID), sizeof(szCommand));
 
-#if 0
-	if( GLoadoutPanel() )
+	BaseModUI::DMLoadout* loadout = static_cast<BaseModUI::DMLoadout*>(BaseModUI::CBaseModPanel::GetSingleton().GetWindow(BaseModUI::WT_DM_LOADOUT));
+	if(loadout)
 	{
 		int iTemp;
 		iTemp = iItemID;
 		if( bSelected )
 		{
-			GLoadoutPanel()->m_iCosmetics.AddToTail( iTemp );
+			loadout->m_iCosmetics.AddToTail( iTemp );
 		}
 		else
 		{
-			for( int i = 0; i < GLoadoutPanel()->m_iCosmetics.Count(); i++ )
+			for( int i = 0; i < loadout->m_iCosmetics.Count(); i++ )
 			{
-				if( iTemp == GLoadoutPanel()->m_iCosmetics[i] )
+				if( iTemp == loadout->m_iCosmetics[i] )
 				{
-					GLoadoutPanel()->m_iCosmetics.Remove( i );
+					loadout->m_iCosmetics.Remove( i );
 				}
 			}
 		}
-		GLoadoutPanel()->m_bUpdateCosmetics = true;
+		loadout->m_bUpdateCosmetics = true;
 	}
-#endif
 
 	CTFScrollableItemList *pItemList = dynamic_cast<CTFScrollableItemList*>( GetParent() );
 
