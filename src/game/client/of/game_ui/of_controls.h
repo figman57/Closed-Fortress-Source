@@ -5,8 +5,8 @@
 // $NoKeywords: $
 //=============================================================================
 
-#ifndef OF_LOADOUT_H
-#define OF_LOADOUT_H
+#ifndef OF_LOADOUT2_H
+#define OF_LOADOUT2_H
 #ifdef _WIN32
 #pragma once
 #endif
@@ -18,6 +18,11 @@
 class CStudioHdr;
 class CCvarToggleCheckButton;
 class CModelPanel;
+
+struct t_CosmeticID
+{
+	int iID;
+};
 
 enum
 {
@@ -453,66 +458,5 @@ private:
 	bool bReset;	
 };
 
-struct t_CosmeticID
-{
-	int iID;
-};
-
-class CTFLoadoutPanel : public vgui::EditablePanel
-{
-private:
-	DECLARE_CLASS_SIMPLE( CTFLoadoutPanel, vgui::EditablePanel );
-
-public:
-	CTFLoadoutPanel();	 
-
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	virtual void ApplySettings( KeyValues* inResourceData );
-	virtual void OnCommand( const char *command );
-	virtual void OnKeyCodePressed( vgui::KeyCode code );
-	virtual void PerformLayout();
-	virtual void PaintBackground();
-	void ShowModal();
-	void DrawClassModel();
-	void SelectWeapon( int iSlot, const char *szWeapon, bool bChangeSelection = false );
-	vgui::CTFModelPanel *GetClassModel(){ return m_pClassModel; };
-	
-	vgui::EditablePanel *GetArsenalPanel(){ return pArsenalPanel; };
-private:
-
-	vgui::Button *m_pNextTipButton;
-	vgui::Button *m_pCloseButton;
-	
-	CUtlVector<CTFScrollableItemList*> m_pItemCategories;
-	CTFLoadoutHeader *m_pItemHeader;
-	vgui::EditablePanel *pCosmeticPanel;
-	vgui::EditablePanel *pArsenalPanel;
-	vgui::EditablePanel *pVisualPanel;
-	CTFScrollablePanelList *pParticleList;
-	CTFScrollablePanelList *pAnnouncerList;
-	
-	CTFSelectionPanel *pPrimaryToggle;
-	CTFSelectionPanel *pSecondaryToggle;
-	CTFSelectionPanel *pMeleeToggle;
-	
-	CTFScrollablePanelList *pWeaponList[3];
-	
-	vgui::CTFModelPanel *m_pClassModel;
-
-	bool m_bInteractive;							// are we in interactive mode
-	bool m_bControlsLoaded;							// have we loaded controls yet
-	bool m_bTennisball;
-	
-	bool m_bParsedParticles; // this is only used so that particles dont crash 
-							 // the memory when we reload the panel
-public:
-	CTFSelectionPanel *m_pSelectedOptions;
-	CUtlVector<int> m_iCosmetics;
-	bool m_bUpdateCosmetics;
-	int m_iCurrentParticle;
-};
-
-extern CTFLoadoutPanel *GLoadoutPanel();
-void DestroyLoadoutPanel();
 
 #endif // OF_LOADOUT_H

@@ -147,6 +147,10 @@ void InGameMainMenu::OnCommand( const char *command )
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_VIDEO, this, true );
 	}
+	else if (!Q_strcmp(command, "showloadoutdialog"))
+	{
+		CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, true);
+	}
 	else if (!Q_strcmp(command, "Brightness"))
 	{
 		// brightness options dialog, PC only

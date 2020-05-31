@@ -68,6 +68,9 @@
 #include "vmyugc.h"
 // #include "GameConsole.h"
 
+#include "vtestpanel.h"
+#include "of/game_ui/VDMLoadout.h"
+
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
 #include "vgui/ILocalize.h"
@@ -595,7 +598,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	// needed to allow engine to exec startup commands (background map signal is 1 frame behind) 
 	m_DelayActivation = 3;
 
-	m_UIScheme = vgui::scheme()->LoadSchemeFromFileEx( 0, "resource/SourceScheme.res", "SwarmScheme" );
+	m_UIScheme = vgui::scheme()->LoadSchemeFromFileEx(0, "resource/ClientScheme.res", "ClientScheme");
 
 	SetScheme( m_UIScheme );
 
@@ -829,6 +832,11 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 
 		case WT_MAINMENU:
 			m_Frames[wt] = new MainMenu(this, "MainMenu");
+			break;
+
+		case WT_DM_LOADOUT:
+			m_Frames[wt] = new DMLoadout(this, "DMLoadout");
+			// m_Frames[wt] = new TestPanel1(this, "TestPanel1");
 			break;
 
 		default:

@@ -257,17 +257,15 @@ void CBaseModFrame::OnKeyCodeTyped( vgui::KeyCode code )
 		OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_A, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		break;
 	case KEY_ESCAPE:
-		/* ~FIX
 		// close active menu if there is one, else navigate back
-		if ( FlyoutMenu::GetActiveMenu() )
-		{
-			FlyoutMenu::CloseActiveMenu( FlyoutMenu::GetActiveMenu()->GetNavFrom() );
-		}
-		else
+		// if ( FlyoutMenu::GetActiveMenu() )
+		// {
+		// 	FlyoutMenu::CloseActiveMenu( FlyoutMenu::GetActiveMenu()->GetNavFrom() );
+		// }
+		// else
 		{
 			OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_B, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 		}
-		*/
 		break;
 
 	}

@@ -21,9 +21,13 @@
 
 #include "tier0/memdbgon.h"
 
+#ifndef GAME_DLL
+#include "game_ui/BaseModPanel.h"
+#include "of/game_ui/VDMLoadout.h"
+#endif
+
 #ifdef CLIENT_DLL
 	#define SHARED_ARGS VarArgs
-	#include "of_loadout.h"
 #else
 	#define SHARED_ARGS UTIL_VarArgs
 #endif
@@ -307,7 +311,11 @@ void ReloadItemsSchema()
 	InitItemsGame();
 	ParseItemsGame();
 #ifdef CLIENT_DLL
-	GLoadoutPanel()->InvalidateLayout( false, true );
+	// DMLoadout *pDMLoadout = static_cast<DMLoadout*>// (BaseModUI::CBaseModPanel::GetSingleton().GetWindow// (BaseModUI::WT_DM_LOADOUT));
+	// if (pDMLoadout)
+	// {
+	// 	pDMLoadout->InvalidateLayout(false, true);
+	// }
 	engine->ExecuteClientCmd( "schema_reload_items_game_server" );
 #endif
 }
