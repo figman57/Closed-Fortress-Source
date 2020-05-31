@@ -88,6 +88,8 @@ MainMenu::MainMenu( Panel *parent, const char *panelName ):
 
 	m_iQuickJoinHelpText = MMQJHT_NONE;
 
+
+
 	SetDeleteSelfOnClose( true );
 }
 

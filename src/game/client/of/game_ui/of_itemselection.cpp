@@ -28,6 +28,8 @@
 
 #include "of_itemselection.h"
 #include "of_scrollableitemlist.h"
+#include "game_ui/BaseModPanel.h"
+#include "game_ui/VDMLoadout.h"
 
 #include "engine/IEngineSound.h"
 #include "basemodelpanel.h"
@@ -124,29 +126,13 @@ void CTFItemSelection::SetSelected( bool bSelected )
 	else
 		Q_strncpy(szCommand, VarArgs("loadout_unequip cosmetics mercenary %d", iItemID), sizeof(szCommand));
 
-#if 0
+	// THIS IS A DIRTY HACK AND BREAKS ALL OOP RULES:
 	BaseModUI::DMLoadout* loadout = static_cast<BaseModUI::DMLoadout*>(BaseModUI::CBaseModPanel::GetSingleton().GetWindow(BaseModUI::WT_DM_LOADOUT));
-	if(loadout)
+	vgui::DMModelPanel* model = loadout->GetClassModel();
+	if (model)
 	{
-		int iTemp;
-		iTemp = iItemID;
-		if( bSelected )
-		{
-			loadout->m_iCosmetics.AddToTail( iTemp );
-		}
-		else
-		{
-			for( int i = 0; i < loadout->m_iCosmetics.Count(); i++ )
-			{
-				if( iTemp == loadout->m_iCosmetics[i] )
-				{
-					loadout->m_iCosmetics.Remove( i );
-				}
-			}
-		}
-		loadout->m_bUpdateCosmetics = true;
+		model->SetCosmetic(iItemID, bSelected);
 	}
-#endif
 
 	CTFScrollableItemList *pItemList = dynamic_cast<CTFScrollableItemList*>( GetParent() );
 

@@ -42,7 +42,7 @@ namespace BaseModUI {
 		virtual void PerformLayout();
 		virtual void PaintBackground();
 		void SelectWeapon(int iSlot, const char *szWeapon, bool bChangeSelection = false);
-		// vgui::CTFModelPanel *GetClassModel() { return m_pClassModel; };
+		vgui::DMModelPanel *GetClassModel() { return m_pClassModel; };
 		vgui::EditablePanel *GetArsenalPanel() { return pArsenalPanel; };
 	private:
 
@@ -67,15 +67,11 @@ namespace BaseModUI {
 
 		bool m_bInteractive;							// are we in interactive mode
 		bool m_bControlsLoaded;							// have we loaded controls yet
-		// bool m_bTennisball;
 
 		bool m_bParsedParticles; // this is only used so that particles dont crash 
 								 // the memory when we reload the panel
 	public:
 		CTFSelectionPanel *m_pSelectedOptions;
-		// CUtlVector<int> m_iCosmetics;
-		// bool m_bUpdateCosmetics;
-		// int m_iCurrentParticle;
 	};
 }
 

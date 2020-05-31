@@ -55,12 +55,7 @@ extern ConVar of_announcer_override;
 DMLoadout::DMLoadout(Panel *parent, const char *panelName) : BaseClass(parent, panelName) 
 {
 	///
-
-	SetProportional(true);
-
-	SetUpperGarnishEnabled(true);
-	SetLowerGarnishEnabled(true);
-	
+	SetProportional(true);	
 	///
 	m_pCloseButton = new Button( this, "CloseButton", "" );	
 	pCosmeticPanel = new EditablePanel( this, "CosmeticPanel" );
@@ -142,6 +137,7 @@ void DMLoadout::ApplySettings( KeyValues *inResourceData )
 		{
 			int iID = atoi(pLoop->GetName());
 			bool bSelected = false;
+
 			if (GetLoadout())
 			{
 				KeyValues *kvCosmetics = GetLoadout()->FindKey("Cosmetics");
@@ -150,17 +146,14 @@ void DMLoadout::ApplySettings( KeyValues *inResourceData )
 					KeyValues *kvMerc = kvCosmetics->FindKey("mercenary");
 					if (kvMerc)
 					{
-						if (iID == kvMerc->GetInt(m_pItemCategories[iExistingLocation]->szCategoryName)) 
+						if (iID == kvMerc->GetInt(m_pItemCategories[iExistingLocation]->szCategoryName))
 						{
 							bSelected = true;
-							if (m_pClassModel)
-							{
-								m_pClassModel->SetCosmetic(iID, bSelected);
-							}
 						}
 					}
 				}
 			}
+
 			m_pItemCategories[iExistingLocation]->AddItem(iID, bSelected);
 		}
 		else

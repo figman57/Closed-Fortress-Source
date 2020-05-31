@@ -70,6 +70,8 @@ void DMModelPanel::ApplySchemeSettings(IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
+	SetLoadoutCosmetics();
+
 	SetPaintBackgroundEnabled(true);
 
 	// Set the animation.
@@ -160,6 +162,14 @@ void DMModelPanel::SetCosmetic(int iCosmeticID, bool bSelected)
 {
 	if (bSelected)
 	{
+		for (int i = 0; i < m_iCosmetics.Count(); i++)
+		{
+			if (iCosmeticID == m_iCosmetics[i])
+			{
+				// Already has the cosmetic, don't add second time
+				return;
+			}
+		}
 		m_iCosmetics.AddToTail(iCosmeticID);
 	}
 	else
@@ -169,8 +179,30 @@ void DMModelPanel::SetCosmetic(int iCosmeticID, bool bSelected)
 			if (iCosmeticID == m_iCosmetics[i])
 			{
 				m_iCosmetics.Remove(i);
+				break;
 			}
 		}
 	}
 	m_bUpdateCosmetics = true;
+}
+
+void DMModelPanel::SetLoadoutCosmetics()
+{
+	if (GetLoadout())
+	{
+		KeyValues *kvCosmetics = GetLoadout()->FindKey("Cosmetics");
+		if (kvCosmetics)
+		{
+			KeyValues *kvMerc = kvCosmetics->FindKey("mercenary");
+			if (kvMerc)
+			{
+				for (KeyValues *pData = kvMerc->GetFirstSubKey(); pData != NULL; pData = pData->GetNextKey())
+				{
+					// const char *pszType = pData->GetName();
+					int id = pData->GetInt();
+					SetCosmetic(id, true);
+				}
+			}
+		}
+	}
 }

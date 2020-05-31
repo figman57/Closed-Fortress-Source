@@ -34,12 +34,8 @@ namespace vgui
 		virtual void PerformLayout();
 		virtual void PaintBackground();
 
+		void SetLoadoutCosmetics();
 		void SetCosmetic(int iCosmeticID, bool bSelected);
-
-		virtual void OnCommand(const char *command)
-		{
-			BaseClass::OnCommand(command);
-		}
 
 		CUtlVector<int> m_iCosmetics;
 		bool m_bUpdateCosmetics;
