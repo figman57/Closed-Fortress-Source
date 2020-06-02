@@ -83,6 +83,7 @@ void DMModelPanel::ApplySchemeSettings(IScheme *pScheme)
 void DMModelPanel::PerformLayout()
 {
 	BaseClass::PerformLayout();
+
 }
 
 void DMModelPanel::PaintBackground()
@@ -188,6 +189,7 @@ void DMModelPanel::SetCosmetic(int iCosmeticID, bool bSelected)
 
 void DMModelPanel::SetLoadoutCosmetics()
 {
+	m_iCosmetics.RemoveAll();
 	if (GetLoadout())
 	{
 		KeyValues *kvCosmetics = GetLoadout()->FindKey("Cosmetics");
@@ -198,11 +200,10 @@ void DMModelPanel::SetLoadoutCosmetics()
 			{
 				for (KeyValues *pData = kvMerc->GetFirstSubKey(); pData != NULL; pData = pData->GetNextKey())
 				{
-					// const char *pszType = pData->GetName();
-					int id = pData->GetInt();
-					SetCosmetic(id, true);
+					m_iCosmetics.AddToTail(pData->GetInt());
 				}
 			}
 		}
 	}
+	m_bUpdateCosmetics = true;
 }
