@@ -48,10 +48,10 @@ public:
 	virtual void OnGameUIActivated() = 0;
 
 	// game dialogs
-	virtual void OnOpenNewGameDialog(const char *chapter = NULL) = 0;
-	virtual void OnOpenBonusMapsDialog() = 0;
-	virtual void OnOpenLoadGameDialog() = 0;
-	virtual void OnOpenSaveGameDialog() = 0;
+	// virtual void OnOpenNewGameDialog(const char *chapter = NULL) = 0;
+	// virtual void OnOpenBonusMapsDialog() = 0;
+	// virtual void OnOpenLoadGameDialog() = 0;
+	// virtual void OnOpenSaveGameDialog() = 0;
 	// virtual void OnOpenServerBrowser() = 0;
 	// virtual void OnOpenFriendsDialog() = 0;
 	// virtual void OnOpenDemoDialog() = 0;

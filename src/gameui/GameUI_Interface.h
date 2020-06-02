@@ -15,6 +15,9 @@
 #include "vgui_controls/PHandle.h"
 #include "convar.h"
 
+#include "OptionsDialog.h"
+#include "PlayerListDialog.h"
+#include "CreateMultiplayerGameDialog.h"
 
 class IGameClientExports;
 class CCommand;
@@ -112,6 +115,13 @@ public:
 	void HideLoadingBackgroundDialog();
 	bool HasLoadingBackgroundDialog();
 
+
+	void OpenOptionsDialog(vgui::Panel *parent);
+	void OpenOptionsMouseDialog(vgui::Panel *parent);
+	void OpenKeyBindingsDialog(vgui::Panel *parent);
+	void OpenCreateMultiplayerGameDialog(vgui::Panel *parent);
+	void OpenPlayerListDialog(vgui::Panel *parent);
+
 private:
 	void SendConnectedToGameMessage();
 
@@ -145,6 +155,10 @@ private:
 
 	char m_szPreviousStatusText[128];
 	char m_szPlatformDir[MAX_PATH];
+
+	vgui::DHANDLE<COptionsDialog> m_hOptionsDialog;	// standalone options dialog - PC only
+	vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
+	vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
 
 	vgui::DHANDLE<class CCDKeyEntryDialog> m_hCDKeyEntryDialog;
 };

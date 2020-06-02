@@ -143,12 +143,6 @@ namespace BaseModUI
 		CBaseModFooterPanel* GetFooterPanel();
 		void SetLastActiveUserId( int userId );
 		int GetLastActiveUserId();
-		void OpenOptionsDialog( Panel *parent );
-		void OpenCustomizationDialog(Panel *parent);
-		void OpenOptionsMouseDialog( Panel *parent );
-		void OpenKeyBindingsDialog( Panel *parent );
-		void OpenCreateMultiplayerGameDialog( Panel *parent );
-		void OpenPlayerListDialog( Panel *parent );
 		
 		MESSAGE_FUNC_CHARPTR( OnNavigateTo, "OnNavigateTo", panelName );
 
@@ -190,11 +184,6 @@ namespace BaseModUI
 		WINDOW_TYPE m_ActiveWindow[WPRI_COUNT];
 		bool m_LevelLoading;
 		vgui::HScheme m_UIScheme;
-		// vgui::DHANDLE<COptionsDialog> m_hOptionsDialog;	// standalone options dialog - PC only
-		// vgui::DHANDLE<CCustomizationDialog> m_hCustomizationDialog;	// standalone options dialog - PC only
-		// vgui::DHANDLE<COptionsMouseDialog> m_hOptionsMouseDialog;	// standalone options dialog - PC only
-		// vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
-		// vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
 		int m_lastActiveUserId;
 
 		vgui::HFont m_hDefaultFont;
@@ -240,29 +229,8 @@ namespace BaseModUI
 		void FadeToBlackAndRunEngineCommand(const char *engineCommand);// fades to black then runs an engine command (usually to start a level)
 		void SetMenuItemBlinkingState(const char *itemName, bool state); // sets the blinking state of a menu item
 		void PositionDialog(vgui::PHandle dlg);
-
-		// game dialogs
-		void OnOpenNewGameDialog(const char *chapter = NULL);
-		void OnOpenBonusMapsDialog();
-		void OnOpenLoadGameDialog();
-		void OnOpenSaveGameDialog();
-
+		
 		void CloseMessageDialog(const uint nType);
-
-		vgui::DHANDLE<vgui::Frame> m_hNewGameDialog;
-		vgui::DHANDLE<vgui::Frame> m_hBonusMapsDialog;
-		vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog;
-		vgui::DHANDLE<vgui::Frame> m_hLoadGameDialog_Xbox;
-		vgui::DHANDLE<vgui::Frame> m_hSaveGameDialog;
-		vgui::DHANDLE<vgui::Frame> m_hSaveGameDialog_Xbox;
-		//vgui::DHANDLE<vgui::PropertyDialog> m_hOptionsDialog;
-		vgui::DHANDLE<vgui::Frame> m_hOptionsDialog_Xbox;
-		//vgui::DHANDLE<vgui::Frame> m_hDemoPlayerDialog;
-		vgui::DHANDLE<vgui::Frame> m_hChangeGameDialog;
-//		vgui::DHANDLE<vgui::Frame> m_hPlayerListDialog;
-		vgui::DHANDLE<vgui::Frame> m_hBenchmarkDialog;
-		vgui::DHANDLE<vgui::Frame> m_hLoadCommentaryDialog;
-		vgui::DHANDLE<vgui::Frame> m_hAchievementsDialog;
 	};
 
 	//-----------------------------------------------------------------------------

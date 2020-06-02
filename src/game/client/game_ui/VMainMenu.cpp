@@ -113,6 +113,7 @@ void MainMenu::OnCommand( const char *command )
 
 	bool bOpeningFlyout = false;
 
+#if 0
 	if (!Q_strcmp(command, "SoloPlay"))
 	{
 
@@ -160,7 +161,9 @@ void MainMenu::OnCommand( const char *command )
 	else if ( !Q_strcmp( command, "PlayerStats" ) )
 	{
 		engine->ClientCmd_Unrestricted( "showstatsdlg" );
-	}	
+	}
+#endif
+#if 0
 	else if (!Q_strcmp(command, "CreateServer"))
 	{
 			CBaseModPanel::GetSingleton().OpenCreateMultiplayerGameDialog( this );
@@ -201,7 +204,6 @@ void MainMenu::OnCommand( const char *command )
 			CBaseModPanel::GetSingleton().OpenWindow(WT_MULTIPLAYER, this, true );
 		}
 	}	
-
 	else if (!Q_strcmp(command, "Audio"))
 	{
 		if ( ui_old_options_menu.GetBool() )
@@ -233,10 +235,6 @@ void MainMenu::OnCommand( const char *command )
 			}
 			CBaseModPanel::GetSingleton().OpenWindow(WT_VIDEO, this, true );
 		}
-	}
-	else if (!Q_strcmp(command, "showloadoutdialog"))
-	{
-		CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, false);
 	}
 	else if (!Q_strcmp(command, "Brightness"))
 	{
@@ -311,7 +309,11 @@ void MainMenu::OnCommand( const char *command )
 	{
 		
 	}
-
+#endif
+	if (!Q_strcmp(command, "showloadoutdialog"))
+	{
+	CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, false);
+	}
 	else if (!Q_strcmp(command, "QuitGame"))
 	{
 		if ( IsPC() )
@@ -927,35 +929,5 @@ void MainMenu::OpenServerBrowser()
 	if ( MainMenu *pMainMenu = static_cast< MainMenu* >( CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ) ) )
 	{
 		pMainMenu->OnCommand( "OpenServerBrowser" );
-	}
-}
-
-CON_COMMAND_F( openserverbrowser, "Opens server browser", 0 )
-{
-	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
-	if ( isSteam )
-	{
-		static CDllDemandLoader g_GameUIDLL("GameUI");
-		CreateInterfaceFn gameUIFactory = g_GameUIDLL.GetFactory();
-		IVGuiModuleLoader& g_VModuleLoader = *((IVGuiModuleLoader *)gameUIFactory(VGUIMODULELOADER_INTERFACE_VERSION, NULL));
-
-		// show the server browser
-		g_VModuleLoader.ActivateModule("Servers");
-
-#if 0
-		// if an argument was passed, that's the tab index to show, send a message to server browser to switch to that tab
-		if ( args.ArgC() > 1 )
-		{
-			KeyValues *pKV = new KeyValues( "ShowServerBrowserPage" );
-			pKV->SetInt( "page", atoi( args[1] ) );
-			g_VModuleLoader.PostMessageToAllModules( pKV );
-		}
-
-
-		KeyValues *pSchemeKV = new KeyValues( "SetCustomScheme" );
-		pSchemeKV->SetString( "SchemeName", "SwarmServerBrowserScheme" );
-		g_VModuleLoader.PostMessageToAllModules( pSchemeKV );
-#endif
-
 	}
 }

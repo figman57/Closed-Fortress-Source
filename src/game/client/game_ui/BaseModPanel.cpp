@@ -1661,16 +1661,15 @@ bool CBaseModPanel::UpdateProgressBar( float progress, const char *statusText )
 		return false;
 	}
 
-
 	LoadingProgress *loadingProgress = static_cast<LoadingProgress*>( OpenWindow( WT_LOADINGPROGRESS, 0 ) );
 
 	// Even if the progress hasn't advanced, we want to go ahead and refresh if it has been more than 1/10 seconds since last refresh to keep the spinny thing going.
 	static float s_LastEngineTime = -1.0f;
 	// clock the anim at 10hz
 	float time = Plat_FloatTime();
-	float deltaTime = time - s_LastEngineTime;
+	// float deltaTime = time - s_LastEngineTime;
 
-	if ( loadingProgress && ( ( loadingProgress->IsDrawingProgressBar() && ( loadingProgress->GetProgress() < progress ) ) || ( deltaTime > 0.06f ) ) )
+	if ( loadingProgress ) //  && ( ( loadingProgress->IsDrawingProgressBar() && ( loadingProgress->GetProgress() < progress ) ) || ( deltaTime > 0.06f ) ) )
 	{
 		// update progress
 		loadingProgress->SetProgress( progress );
@@ -1762,109 +1761,6 @@ static void BaseUI_PositionDialog(vgui::PHandle dlg)
 
 	// Center it, keeping requested size
 	dlg->SetPos(x + ((ww - wide) / 2), y + ((wt - tall) / 2));
-}
-
-//=============================================================================
-void CBaseModPanel::OpenCreateMultiplayerGameDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hCreateMultiplayerGameDialog.Get() )
-		{
-			m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog( parent );
-			BaseUI_PositionDialog( m_hCreateMultiplayerGameDialog );
-		}
-		if ( m_hCreateMultiplayerGameDialog )
-			m_hCreateMultiplayerGameDialog->Activate();
-	}
-#endif
-}
-
-//=============================================================================
-void CBaseModPanel::OpenPlayerListDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hPlayerListDialog.Get() )
-		{
-			m_hPlayerListDialog = new CPlayerListDialog( parent );
-			BaseUI_PositionDialog( m_hPlayerListDialog );
-		}
-
-		m_hPlayerListDialog->Activate();
-	}
-#endif
-}
-
-//=============================================================================
-void CBaseModPanel::OpenOptionsDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hOptionsDialog.Get() )
-		{
-			m_hOptionsDialog = new COptionsDialog( parent );
-			BaseUI_PositionDialog( m_hOptionsDialog );
-		}
-
-		m_hOptionsDialog->Activate();
-	}
-#endif
-}
-
-//=============================================================================
-void CBaseModPanel::OpenCustomizationDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hCustomizationDialog.Get() )
-		{
-			m_hCustomizationDialog = new CCustomizationDialog( parent );
-			BaseUI_PositionDialog(m_hCustomizationDialog);
-		}
-
-		m_hCustomizationDialog->Activate();
-	}
-#endif
-}
-
-
-//=============================================================================
-void CBaseModPanel::OpenOptionsMouseDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hOptionsMouseDialog.Get() )
-		{
-			m_hOptionsMouseDialog = new COptionsMouseDialog( parent );
-			BaseUI_PositionDialog( m_hOptionsMouseDialog );
-		}
-
-		m_hOptionsMouseDialog->Activate();
-	}
-#endif
-}
-
-//=============================================================================
-void CBaseModPanel::OpenKeyBindingsDialog( Panel *parent )
-{
-#if 0
-	if ( IsPC() )
-	{			
-		if ( !m_hOptionsDialog.Get() )
-		{
-			m_hOptionsDialog = new COptionsDialog( parent, OPTIONS_DIALOG_ONLY_BINDING_TABS );
-			BaseUI_PositionDialog( m_hOptionsDialog );
-		}
-
-		m_hOptionsDialog->Activate();
-	}
-#endif
 }
 
 //=============================================================================
@@ -2676,74 +2572,6 @@ void CBaseModPanel::SetMenuItemBlinkingState(const char *itemName, bool state)
 KeyValues *CBaseModPanel::GetConsoleControlSettings(void)
 {
 	return m_pConsoleControlSettings;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBaseModPanel::OnOpenNewGameDialog(const char *chapter)
-{
-#if 0
-	if ( !m_hNewGameDialog.Get() )
-	{
-		m_hNewGameDialog = new CNewGameDialog(this, false);
-		PositionDialog( m_hNewGameDialog );
-	}
-
-	if ( chapter )
-	{
-		((CNewGameDialog *)m_hNewGameDialog.Get())->SetSelectedChapter(chapter);
-	}
-
-	((CNewGameDialog *)m_hNewGameDialog.Get())->SetCommentaryMode( false );
-	m_hNewGameDialog->Activate();
-#endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBaseModPanel::OnOpenBonusMapsDialog(void)
-{
-#if 0
-	if ( !m_hBonusMapsDialog.Get() )
-	{
-		m_hBonusMapsDialog = new CBonusMapsDialog(this);
-		PositionDialog( m_hBonusMapsDialog );
-	}
-
-	m_hBonusMapsDialog->Activate();
-#endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBaseModPanel::OnOpenLoadGameDialog()
-{
-#if 0
-	if ( !m_hLoadGameDialog.Get() )
-	{
-		m_hLoadGameDialog = new CLoadGameDialog(this);
-		PositionDialog( m_hLoadGameDialog );
-	}
-	m_hLoadGameDialog->Activate();
-#endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CBaseModPanel::OnOpenSaveGameDialog()
-{
-#if 0
-	if ( !m_hSaveGameDialog.Get() )
-	{
-		m_hSaveGameDialog = new CSaveGameDialog(this);
-		PositionDialog( m_hSaveGameDialog );
-	}
-	m_hSaveGameDialog->Activate();
-#endif
 }
 
 void CBaseModPanel::CloseMessageDialog(const uint nType)
@@ -3729,98 +3557,3 @@ void CMessageDialogHandler::PositionDialog( vgui::PHandle dlg, int wide, int tal
 	dlg->GetSize(w, t);
 	dlg->SetPos( (wide - w) / 2, (tall - t) / 2 );
 }			
-
-static char *g_rgValidCommands[] =
-{
-	"OpenGameMenu",
-	"OpenPlayerListDialog",
-	"OpenNewGameDialog",
-	"OpenLoadGameDialog",
-	"OpenSaveGameDialog",
-	"OpenCustomMapsDialog",
-	"OpenOptionsDialog",
-	"OpenBenchmarkDialog",
-	"OpenFriendsDialog",
-	"OpenLoadDemoDialog",
-	"OpenCreateMultiplayerGameDialog",
-	"OpenChangeGameDialog",
-	"OpenLoadCommentaryDialog",
-	"Quit",
-	"QuitNoConfirm",
-	"ResumeGame",
-	"Disconnect",
-};
-
-static void CC_GameMenuCommand(const CCommand &args)
-{
-	int c = args.ArgC();
-	if (c < 2)
-	{
-		Msg("Usage:  gamemenucommand <commandname>\n");
-		return;
-	}
-
-	if (!g_pBasePanel)
-	{
-		return;
-	}
-
-	vgui::ivgui()->PostMessage(g_pBasePanel->GetVPanel(), new KeyValues("Command", "command", args[1]), NULL);
-}
-
-// This is defined in ulstring.h at the bottom in 2013 MP
-/*
-static bool UtlStringLessFunc(const CUtlString &lhs, const CUtlString &rhs)
-{
-	return Q_stricmp(lhs.String(), rhs.String()) < 0;
-}*/
-
-static int CC_GameMenuCompletionFunc(char const *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
-{
-	char const *cmdname = "gamemenucommand";
-
-	char *substring = (char *)partial;
-	if (Q_strstr(partial, cmdname))
-	{
-		substring = (char *)partial + strlen(cmdname) + 1;
-	}
-
-	int checklen = Q_strlen(substring);
-
-	CUtlRBTree< CUtlString > symbols(0, 0, UtlStringLessFunc);
-
-	int i;
-	int c = ARRAYSIZE(g_rgValidCommands);
-	for (i = 0; i < c; ++i)
-	{
-		if (Q_strnicmp(g_rgValidCommands[i], substring, checklen))
-			continue;
-
-		CUtlString str;
-		str = g_rgValidCommands[i];
-
-		symbols.Insert(str);
-
-		// Too many
-		if (symbols.Count() >= COMMAND_COMPLETION_MAXITEMS)
-			break;
-	}
-
-	// Now fill in the results
-	int slot = 0;
-	for (i = symbols.FirstInorder(); i != symbols.InvalidIndex(); i = symbols.NextInorder(i))
-	{
-		char const *name = symbols[i].String();
-
-		char buf[512];
-		Q_strncpy(buf, name, sizeof(buf));
-		Q_strlower(buf);
-
-		Q_snprintf(commands[slot++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s",
-			cmdname, buf);
-	}
-
-	return slot;
-}
-
-static ConCommand gamemenucommand("gamemenucommand", CC_GameMenuCommand, "Issue game menu command.", 0, CC_GameMenuCompletionFunc);

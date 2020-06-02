@@ -1350,36 +1350,229 @@ STUB_GAMEUI_FUNC(BonusMapDatabaseSave, void, , );
 STUB_GAMEUI_FUNC(BonusMapNumAdvancedCompleted, int, 0, );
 STUB_GAMEUI_FUNC(BonusMapNumMedals, void, , int piNumMedals[3]);
 STUB_GAMEUI_FUNC(ValidateStorageDevice, bool, false, int *pStorageDeviceValidated);
-void CGameUI::OnConfirmQuit()
-{
-#if 0
-	if( !engine->IsInGame() )
-	{
-		MainMenu *pMainMenu = static_cast< MainMenu* >( CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ) );
-		if ( pMainMenu )
-		{
-			pMainMenu->OnCommand( "QuitGame" );
-		}
-	}
-	else
-	{
-		InGameMainMenu *pInGameMainMenu = static_cast< InGameMainMenu* >( CBaseModPanel::GetSingleton().GetWindow( WT_INGAMEMAINMENU ) );
-		if ( pInGameMainMenu )
-		{
-			pInGameMainMenu->OnCommand( "QuitGame" );
-		}
-		
-	}
-#endif
-}
+STUB_GAMEUI_FUNC(OnConfirmQuit, void ,);
 STUB_GAMEUI_FUNC(IsMainMenuVisible, bool, false, );
 STUB_GAMEUI_FUNC(SetMainMenuOverride, void, , vgui::VPANEL panel);
-
 STUB_GAMEUI_FUNC(SendMainMenuCommand, void, , const char *pszCommand);
+
+//-----------------------------------------------------------------------------
+// Purpose: moves the game menu button to the right place on the taskbar
+//-----------------------------------------------------------------------------
+static void BaseUI_PositionDialog(vgui::PHandle dlg)
+{
+	if (!dlg.Get())
+		return;
+
+	int x, y, ww, wt, wide, tall;
+	vgui::surface()->GetWorkspaceBounds(x, y, ww, wt);
+	dlg->GetSize(wide, tall);
+
+	// Center it, keeping requested size
+	dlg->SetPos(x + ((ww - wide) / 2), y + ((wt - tall) / 2));
+}
 
 void CGameUI::SetBasePanel(IBasePanel* basePanel)
 {
 	gBasePanel = basePanel;
 	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
 	gBasePanel->GetVguiPanel().SetParent(rootpanel);
+}
+
+//=============================================================================
+void CGameUI::OpenCreateMultiplayerGameDialog(vgui::Panel *parent)
+{
+	if (IsPC())
+	{
+		if (!m_hCreateMultiplayerGameDialog.Get())
+		{
+			m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog(parent);
+			// BaseUI_PositionDialog(m_hCreateMultiplayerGameDialog);
+		}
+		if (m_hCreateMultiplayerGameDialog)
+			m_hCreateMultiplayerGameDialog->Activate();
+	}
+}
+
+//=============================================================================
+void CGameUI::OpenPlayerListDialog(vgui::Panel *parent)
+{
+	if (IsPC())
+	{
+		if (!m_hPlayerListDialog.Get())
+		{
+			m_hPlayerListDialog = new CPlayerListDialog(parent);
+			// BaseUI_PositionDialog(m_hPlayerListDialog);
+		}
+
+		m_hPlayerListDialog->Activate();
+	}
+}
+
+//=============================================================================
+void CGameUI::OpenOptionsDialog(vgui::Panel *parent)
+{
+	if (IsPC())
+	{
+		if (!m_hOptionsDialog.Get())
+		{
+			m_hOptionsDialog = new COptionsDialog(parent);
+			BaseUI_PositionDialog(m_hOptionsDialog);
+		}
+
+		m_hOptionsDialog->Activate();
+	}
+}
+
+#if 0
+//=============================================================================
+void CGameUI::OpenOptionsMouseDialog(vgui::Panel *parent)
+{
+	if (IsPC())
+	{
+		if (!m_hOptionsMouseDialog.Get())
+		{
+			m_hOptionsMouseDialog = new COptionsMouseDialog(parent);
+			// BaseUI_PositionDialog(m_hOptionsMouseDialog);
+		}
+
+		m_hOptionsMouseDialog->Activate();
+	}
+}
+
+//=============================================================================
+void CGameUI::OpenKeyBindingsDialog(vgui::Panel *parent)
+{
+	if (IsPC())
+	{
+		if (!m_hOptionsDialog.Get())
+		{
+			m_hOptionsDialog = new COptionsDialog(parent, OPTIONS_DIALOG_ONLY_BINDING_TABS);
+			// BaseUI_PositionDialog(m_hOptionsDialog);
+		}
+
+		m_hOptionsDialog->Activate();
+	}
+}
+#endif
+
+static char *g_rgValidCommands[] =
+{
+	"OpenGameMenu",
+	"OpenPlayerListDialog",
+	"OpenNewGameDialog",
+	"OpenLoadGameDialog",
+	"OpenSaveGameDialog",
+	"OpenCustomMapsDialog",
+	"OpenOptionsDialog",
+	"OpenBenchmarkDialog",
+	"OpenFriendsDialog",
+	"OpenLoadDemoDialog",
+	"OpenCreateMultiplayerGameDialog",
+	"OpenChangeGameDialog",
+	"OpenLoadCommentaryDialog",
+	"Quit",
+	"QuitNoConfirm",
+	"ResumeGame",
+	"Disconnect",
+};
+
+static void CC_GameMenuCommand(const CCommand &args)
+{
+	int c = args.ArgC();
+	if (c < 2)
+	{
+		Msg("Usage:  gamemenucommand <commandname>\n");
+		return;
+	}
+
+	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
+	vgui::Panel *pGameUIPanel = vgui::ipanel()->GetPanel(rootpanel, "GameUI");
+
+	if (!Q_strcmp(args[1], "OpenOptionsDialog"))
+	{
+		GameUI().OpenOptionsDialog(pGameUIPanel);
+	}
+
+	// vgui::ivgui()->PostMessage(rootpanel, new KeyValues("Command", "command", args[1]), NULL);
+}
+
+// This is defined in ulstring.h at the bottom in 2013 MP
+/*
+static bool UtlStringLessFunc(const CUtlString &lhs, const CUtlString &rhs)
+{
+	return Q_stricmp(lhs.String(), rhs.String()) < 0;
+}*/
+
+static int CC_GameMenuCompletionFunc(char const *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	char const *cmdname = "gamemenucommand";
+
+	char *substring = (char *)partial;
+	if (Q_strstr(partial, cmdname))
+	{
+		substring = (char *)partial + strlen(cmdname) + 1;
+	}
+
+	int checklen = Q_strlen(substring);
+
+	CUtlRBTree< CUtlString > symbols(0, 0, UtlStringLessFunc);
+
+	int i;
+	int c = ARRAYSIZE(g_rgValidCommands);
+	for (i = 0; i < c; ++i)
+	{
+		if (Q_strnicmp(g_rgValidCommands[i], substring, checklen))
+			continue;
+
+		CUtlString str;
+		str = g_rgValidCommands[i];
+
+		symbols.Insert(str);
+
+		// Too many
+		if (symbols.Count() >= COMMAND_COMPLETION_MAXITEMS)
+			break;
+	}
+
+	// Now fill in the results
+	int slot = 0;
+	for (i = symbols.FirstInorder(); i != symbols.InvalidIndex(); i = symbols.NextInorder(i))
+	{
+		char const *name = symbols[i].String();
+
+		char buf[512];
+		Q_strncpy(buf, name, sizeof(buf));
+		Q_strlower(buf);
+
+		Q_snprintf(commands[slot++], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s",
+			cmdname, buf);
+	}
+
+	return slot;
+}
+
+static ConCommand gamemenucommand("gamemenucommand", CC_GameMenuCommand, "Issue game menu command.", 0, CC_GameMenuCompletionFunc);
+
+CON_COMMAND_F(openserverbrowser, "Opens server browser", 0)
+{
+	bool isSteam = IsPC() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils();
+	if (isSteam)
+	{
+		// show the server browser
+		g_VModuleLoader.ActivateModule("Servers");
+
+		// if an argument was passed, that's the tab index to show, send a message to server browser to switch to that tab
+		if (args.ArgC() > 1)
+		{
+			KeyValues *pKV = new KeyValues("ShowServerBrowserPage");
+			pKV->SetInt("page", atoi(args[1]));
+			g_VModuleLoader.PostMessageToAllModules(pKV);
+		}
+
+
+		KeyValues *pSchemeKV = new KeyValues("SetCustomScheme");
+		pSchemeKV->SetString("SchemeName", "SwarmServerBrowserScheme");
+		g_VModuleLoader.PostMessageToAllModules(pSchemeKV);
+
+	}
 }

@@ -163,6 +163,7 @@ void InGameMainMenu::OnCommand( const char *command )
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_KEYBOARDMOUSE, this, true );
 	}
+#if 0
 	else if (!Q_strcmp(command, "Mouse"))
 	{
 		CBaseModPanel::GetSingleton().OpenOptionsMouseDialog( this );
@@ -179,6 +180,8 @@ void InGameMainMenu::OnCommand( const char *command )
 	{
 			CBaseModPanel::GetSingleton().OpenCreateMultiplayerGameDialog( this );
 	}
+#endif
+#if 0
 	else if (!Q_strcmp(command, "SaveGame"))
 	{
 
@@ -218,7 +221,8 @@ void InGameMainMenu::OnCommand( const char *command )
 	{
 		CBaseModPanel::GetSingleton().OnOpenNewGameDialog();
 	}
-
+#endif
+#if 0
 	else if (!Q_strcmp(command, "Options"))
 	{
 		CBaseModPanel::GetSingleton().OpenOptionsDialog( this );
@@ -232,6 +236,7 @@ void InGameMainMenu::OnCommand( const char *command )
 		FlyoutMenu::CloseActiveMenu();
 		CBaseModPanel::GetSingleton().OpenKeyBindingsDialog( this );
 	}
+#endif
 	else if (!Q_strcmp(command, "MultiplayerSettings"))
 	{
 		// standalone multiplayer settings dialog, PC only
@@ -287,10 +292,12 @@ void InGameMainMenu::OnCommand( const char *command )
 			engine->ClientCmd_Unrestricted( "quit" );
 		}
 	}	
+#if 0
 	else if( !Q_strcmp( command, "OpenPlayerListDialog" ) )
 	{	
 		CBaseModPanel::GetSingleton().OpenPlayerListDialog( this );
 	}
+#endif
 	else
 	{
 		engine->ClientCmd_Unrestricted( command );
