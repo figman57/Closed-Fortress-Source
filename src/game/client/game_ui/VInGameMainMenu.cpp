@@ -135,6 +135,23 @@ void InGameMainMenu::OnCommand( const char *command )
 	{
 		engine->ClientCmd_Unrestricted("gameui_hide");
 	}
+	else if (!Q_strcmp(command, "showloadoutdialog"))
+	{
+		CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, true);
+	}
+	else if (!Q_strcmp(command, "Options"))
+	{
+		engine->ClientCmd_Unrestricted("gamemenucommand OpenOptionsDialog");
+	}
+	else if (!Q_strcmp(command, "CreateServer"))
+	{
+		engine->ClientCmd_Unrestricted("gamemenucommand OpenCreateMultiplayerGameDialog");
+	}
+	else if (!Q_strcmp(command, "OpenPlayerListDialog"))
+	{
+		engine->ClientCmd_Unrestricted("gamemenucommand OpenPlayerListDialog");
+	}
+#if 0
 	else if (!Q_strcmp(command, "Audio"))
 	{
 		// audio options dialog, PC only
@@ -146,10 +163,6 @@ void InGameMainMenu::OnCommand( const char *command )
 		// video options dialog, PC only
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_VIDEO, this, true );
-	}
-	else if (!Q_strcmp(command, "showloadoutdialog"))
-	{
-		CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, true);
 	}
 	else if (!Q_strcmp(command, "Brightness"))
 	{
@@ -163,7 +176,6 @@ void InGameMainMenu::OnCommand( const char *command )
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_KEYBOARDMOUSE, this, true );
 	}
-#if 0
 	else if (!Q_strcmp(command, "Mouse"))
 	{
 		CBaseModPanel::GetSingleton().OpenOptionsMouseDialog( this );
@@ -176,73 +188,22 @@ void InGameMainMenu::OnCommand( const char *command )
 		// on PC, bring up the server browser and switch it to the LAN tab (tab #5)
 		engine->ClientCmd_Unrestricted( "openserverbrowser" );
 	}
-	else if (!Q_strcmp(command, "CreateServer"))
-	{
-			CBaseModPanel::GetSingleton().OpenCreateMultiplayerGameDialog( this );
-	}
-#endif
-#if 0
-	else if (!Q_strcmp(command, "SaveGame"))
-	{
-
-		CBaseModPanel::GetSingleton().OnOpenSaveGameDialog();
-		/*GenericConfirmation* confirmation = 
-			static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, true ) );
-
-		GenericConfirmation::Data_t data;
-
-		data.pWindowTitle = "#GameUI_ConfirmOverwriteSaveGame_Title";
-		data.pMessageText = "#GameUI_ConfirmOverwriteSaveGame_Info";
-		data.bOkButtonEnabled = true;
-		data.pfnOkCallback = &SavedGameCallback;
-		data.bCancelButtonEnabled = true;
-
-		confirmation->SetUsageData(data);*/
-	}
-
-	else if (!Q_strcmp(command, "LoadLastSave"))
-	{
-		CBaseModPanel::GetSingleton().OnOpenLoadGameDialog();
-		/*GenericConfirmation* confirmation = 
-			static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, true ) );
-
-		GenericConfirmation::Data_t data;
-
-		data.pWindowTitle = "#GameUI_ConfirmLoadGame_Title";
-		data.pMessageText = "#GameUI_LoadWarning";
-		data.bOkButtonEnabled = true;
-		data.pfnOkCallback = &LoadGameCallback;
-		data.bCancelButtonEnabled = true;
-
-		confirmation->SetUsageData(data);*/
-	}
-
 	else if (!Q_strcmp(command, "SoloPlay"))
 	{
 		CBaseModPanel::GetSingleton().OnOpenNewGameDialog();
 	}
-#endif
-#if 0
-	else if (!Q_strcmp(command, "Options"))
-	{
-		CBaseModPanel::GetSingleton().OpenOptionsDialog( this );
-	}
-	else if (!Q_strcmp(command, "Customization")) //TODO: REMOVE THIS WHEN LOADOUT IS ADDED
-	{
-		CBaseModPanel::GetSingleton().OpenCustomizationDialog( this );
-	}	
 	else if( Q_stricmp( "#L4D360UI_Controller_Edit_Keys_Buttons", command ) == 0 )
 	{
 		FlyoutMenu::CloseActiveMenu();
 		CBaseModPanel::GetSingleton().OpenKeyBindingsDialog( this );
 	}
-#endif
 	else if (!Q_strcmp(command, "MultiplayerSettings"))
 	{
 		// standalone multiplayer settings dialog, PC only
 		m_ActiveControl->NavigateFrom( );
 		CBaseModPanel::GetSingleton().OpenWindow(WT_MULTIPLAYER, this, true );
 	}
+#endif
 	else if( !Q_strcmp( command, "ExitToMainMenu" ) )
 	{
 		GenericConfirmation* confirmation = 
@@ -292,12 +253,6 @@ void InGameMainMenu::OnCommand( const char *command )
 			engine->ClientCmd_Unrestricted( "quit" );
 		}
 	}	
-#if 0
-	else if( !Q_strcmp( command, "OpenPlayerListDialog" ) )
-	{	
-		CBaseModPanel::GetSingleton().OpenPlayerListDialog( this );
-	}
-#endif
 	else
 	{
 		engine->ClientCmd_Unrestricted( command );

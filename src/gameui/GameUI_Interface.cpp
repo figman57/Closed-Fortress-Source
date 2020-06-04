@@ -258,6 +258,7 @@ void CGameUI::PostInit()
 //-----------------------------------------------------------------------------
 void CGameUI::SetLoadingBackgroundDialog( vgui::VPANEL panel )
 {
+	// MrModez: No need to implement, all logic is in BaseModPanel
 }
 
 //-----------------------------------------------------------------------------
@@ -849,22 +850,29 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 	StopProgressBar( bError, failureReason, extendedReason );
 
 	// notify all the modules
-	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingFinished" ) );
+	g_VModuleLoader.PostMessageToAllModules(new KeyValues("LoadingFinished"));
 
-	// Need to call this function in the Base mod Panel to let it know that we've finished loading the level
-	// This should fix the loading screen not disappearing.
+	bool bDatatable = false;
+	if (failureReason)
+	{
+		if (Q_strstr(failureReason, "class tables"))
+		{
+			bDatatable = true;
+		}
+	}
 
 	if (IBasePanel* panel = GetBasePanel())
 	{
 		KeyValues *pEvent = new KeyValues("LoadingFinished");
-		pEvent->SetString("reason", failureReason);
+		if (bDatatable)
+			pEvent->SetString("reason", "#GameUI_ErrorOutdatedBinaries");
+		else
+			pEvent->SetString("reason", failureReason);
 		pEvent->SetInt("error", bError);
 		panel->OnLevelLoadingFinished(pEvent);
 	}
 
 	HideLoadingBackgroundDialog();
-
-
 }
 
 //-----------------------------------------------------------------------------
@@ -920,26 +928,6 @@ void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char
 		// kill the FUCKING modules so they stop eating precious input
 		GameConsole().Hide();
 		g_VModuleLoader.DeactivateModule("Servers");
-
-		bool bDatatable = false;
-		if ( failureReason )
-		{
-			if ( Q_strstr( failureReason, "class tables" ) )
-			{
-				bDatatable = true;
-			}
-		}
-
-		if (IBasePanel* panel = GetBasePanel())
-		{
-			KeyValues *pEvent = new KeyValues("LoadingFinished");
-			if (bDatatable)
-				pEvent->SetString("reason", "#GameUI_ErrorOutdatedBinaries");
-			else
-				pEvent->SetString("reason", failureReason);
-			pEvent->SetInt("error", bError);
-			panel->OnLevelLoadingFinished(pEvent);
-		}
 	}
 }
 
@@ -1223,8 +1211,6 @@ STUB_GAMEUI_FUNC(BonusMapNumMedals, void, , int piNumMedals[3]);
 STUB_GAMEUI_FUNC(ValidateStorageDevice, bool, false, int *pStorageDeviceValidated);
 STUB_GAMEUI_FUNC(OnConfirmQuit, void ,);
 STUB_GAMEUI_FUNC(IsMainMenuVisible, bool, false, );
-// STUB_GAMEUI_FUNC(SetMainMenuOverride, void, , vgui::VPANEL panel);
-STUB_GAMEUI_FUNC(SendMainMenuCommand, void, , const char *pszCommand);
 
 void CGameUI::SetMainMenuOverride(vgui::VPANEL panel)
 {
@@ -1237,6 +1223,37 @@ void CGameUI::SetMainMenuOverride(vgui::VPANEL panel)
 	}
 	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
 	gBasePanel->GetVguiPanel().SetParent(rootpanel);
+}
+
+void CGameUI::SendMainMenuCommand(const char *pszCommand)
+{
+	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
+	vgui::Panel *pGameUIPanel = vgui::ipanel()->GetPanel(rootpanel, "GameUI");
+
+	if (!Q_strcmp(pszCommand, "OpenOptionsDialog"))
+	{
+		GameUI().OpenOptionsDialog(pGameUIPanel);
+	}
+	else if (!Q_strcmp(pszCommand, "OpenOptionsMouseDialog"))
+	{
+		GameUI().OpenOptionsMouseDialog(pGameUIPanel);
+	}
+	else if (!Q_strcmp(pszCommand, "OpenKeyBindingsDialog"))
+	{
+		GameUI().OpenKeyBindingsDialog(pGameUIPanel);
+	}
+	else if (!Q_strcmp(pszCommand, "OpenCreateMultiplayerGameDialog"))
+	{
+		GameUI().OpenCreateMultiplayerGameDialog(pGameUIPanel);
+	}
+	else if (!Q_strcmp(pszCommand, "OpenPlayerListDialog"))
+	{
+		GameUI().OpenPlayerListDialog(pGameUIPanel);
+	}
+	else if (!Q_strcmp(pszCommand, "OpenOptionsMouseDialog"))
+	{
+		GameUI().OpenOptionsMouseDialog(pGameUIPanel);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1263,7 +1280,7 @@ void CGameUI::OpenCreateMultiplayerGameDialog(vgui::Panel *parent)
 		if (!m_hCreateMultiplayerGameDialog.Get())
 		{
 			m_hCreateMultiplayerGameDialog = new CCreateMultiplayerGameDialog(parent);
-			BaseUI_PositionDialog(m_hOptionsDialog);
+			BaseUI_PositionDialog(m_hCreateMultiplayerGameDialog);
 		}
 		if (m_hCreateMultiplayerGameDialog)
 			m_hCreateMultiplayerGameDialog->Activate();
@@ -1278,11 +1295,16 @@ void CGameUI::OpenPlayerListDialog(vgui::Panel *parent)
 		if (!m_hPlayerListDialog.Get())
 		{
 			m_hPlayerListDialog = new CPlayerListDialog(parent);
-			BaseUI_PositionDialog(m_hOptionsDialog);
+			BaseUI_PositionDialog(m_hPlayerListDialog);
 		}
 
 		m_hPlayerListDialog->Activate();
 	}
+}
+
+void CGameUI::OnOpenServerBrowser(vgui::Panel * parent)
+{
+	g_VModuleLoader.ActivateModule("Servers");
 }
 
 //=============================================================================
@@ -1308,7 +1330,7 @@ void CGameUI::OpenOptionsMouseDialog(vgui::Panel *parent)
 		if (!m_hOptionsMouseDialog.Get())
 		{
 			m_hOptionsMouseDialog = new COptionsMouseDialog(parent);
-			BaseUI_PositionDialog(m_hOptionsDialog);
+			BaseUI_PositionDialog(m_hOptionsMouseDialog);
 		}
 
 		m_hOptionsMouseDialog->Activate();
@@ -1360,33 +1382,7 @@ static void CC_GameMenuCommand(const CCommand &args)
 		return;
 	}
 
-	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
-	vgui::Panel *pGameUIPanel = vgui::ipanel()->GetPanel(rootpanel, "GameUI");
-
-	if (!Q_strcmp(args[1], "OpenOptionsDialog"))
-	{
-		GameUI().OpenOptionsDialog(pGameUIPanel);
-	}
-	else if (!Q_strcmp(args[1], "OpenOptionsMouseDialog"))
-	{
-		GameUI().OpenOptionsMouseDialog(pGameUIPanel);
-	}
-	else if (!Q_strcmp(args[1], "OpenKeyBindingsDialog"))
-	{
-		GameUI().OpenKeyBindingsDialog(pGameUIPanel);
-	}
-	else if (!Q_strcmp(args[1], "OpenCreateMultiplayerGameDialog"))
-	{
-		GameUI().OpenCreateMultiplayerGameDialog(pGameUIPanel);
-	}
-	else if (!Q_strcmp(args[1], "OpenPlayerListDialog"))
-	{
-		GameUI().OpenPlayerListDialog(pGameUIPanel);
-	}
-	else if (!Q_strcmp(args[1], "OpenOptionsMouseDialog"))
-	{
-		GameUI().OpenOptionsMouseDialog(pGameUIPanel);
-	}
+	g_pGameUI->SendMainMenuCommand(args[1]);
 }
 
 // This is defined in ulstring.h at the bottom in 2013 MP

@@ -113,44 +113,7 @@ void MainMenu::OnCommand( const char *command )
 
 	bool bOpeningFlyout = false;
 
-#if 0
-	if (!Q_strcmp(command, "SoloPlay"))
-	{
-
-		CBaseModPanel::GetSingleton().OnOpenNewGameDialog();
-		/*if(CheckSaveFile())
-		{
-			GenericConfirmation* confirmation = 
-				static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
-
-			GenericConfirmation::Data_t data;
-
-			data.pWindowTitle = "#Template_NewGame_Confirm";
-			data.pMessageText = "#Template_NewGame_ConfirmMsg";
-
-			data.bOkButtonEnabled = true;
-			data.pfnOkCallback = &AcceptNewGameCallback;
-			data.bCancelButtonEnabled = true;
-
-			confirmation->SetUsageData(data);
-
-			NavigateFrom();
-
-			engine->ExecuteClientCmd("sv_cheats 0");
-			engine->ExecuteClientCmd("commentary 0");
-		}
-		else
-		{
-			if ( MainMenu *pMainMenu = static_cast< MainMenu* >( CBaseModPanel::GetSingleton().GetWindow( WT_MAINMENU ) ) )
-			{
-				engine->ExecuteClientCmd( "sv_cheats 0" );
-				engine->ExecuteClientCmd( "commentary 0" );
-				OnCommand( "SoloPlay_NoConfirm" );
-			}
-
-		}*/
-	}
-	else if ( !Q_strcmp( command, "OpenServerBrowser" ) )
+	if ( !Q_strcmp( command, "OpenServerBrowser" ) )
 	{
 		if ( CheckAndDisplayErrorIfNotLoggedIn() )
 			return;
@@ -162,12 +125,15 @@ void MainMenu::OnCommand( const char *command )
 	{
 		engine->ClientCmd_Unrestricted( "showstatsdlg" );
 	}
-#endif
-#if 0
+	else if (!Q_strcmp(command, "Options"))
+	{
+		engine->ClientCmd_Unrestricted("gamemenucommand OpenOptionsDialog");
+	}
 	else if (!Q_strcmp(command, "CreateServer"))
 	{
-			CBaseModPanel::GetSingleton().OpenCreateMultiplayerGameDialog( this );
+		engine->ClientCmd_Unrestricted("gamemenucommand OpenCreateMultiplayerGameDialog");
 	}
+#if 0
 	else if ( !Q_strcmp( command, "StatsAndAchievements" ) )
 	{
 		// If PC make sure that the Steam user is logged in
@@ -179,14 +145,6 @@ void MainMenu::OnCommand( const char *command )
 		}
 
 		CBaseModPanel::GetSingleton().OpenWindow( WT_ACHIEVEMENTS, this, true );
-	}
-	else if (!Q_strcmp(command, "Options"))
-	{
-		CBaseModPanel::GetSingleton().OpenOptionsDialog( this );
-	}
-	else if (!Q_strcmp(command, "Customization"))
-	{
-		CBaseModPanel::GetSingleton().OpenCustomizationDialog( this ); //TODO: REMOVE THIS WHEN LOADOUT IS ADDED
 	}
 	else if (!Q_strcmp(command, "MultiplayerSettings"))
 	{
@@ -274,45 +232,10 @@ void MainMenu::OnCommand( const char *command )
 		FlyoutMenu::CloseActiveMenu();
 		CBaseModPanel::GetSingleton().OpenKeyBindingsDialog( this );
 	}
-	
-	else if (!Q_strcmp(command, "LoadLastSave"))
-	{
-		CBaseModPanel::GetSingleton().OnOpenLoadGameDialog();
-		/*if ( IsPC() )
-		{
-			GenericConfirmation* confirmation = 
-				static_cast< GenericConfirmation* >( CBaseModPanel::GetSingleton().OpenWindow( WT_GENERICCONFIRMATION, this, false ) );
-
-			GenericConfirmation::Data_t data;
-
-			data.pWindowTitle = "#Template_LoadLastSave_Confirm";
-			data.pMessageText = "#Template_LoadLastSave_ConfirmMsg";
-
-			data.bOkButtonEnabled = true;
-			data.pfnOkCallback = &AcceptLoadCallback;
-			data.bCancelButtonEnabled = true;
-
-			confirmation->SetUsageData(data);
-
-			NavigateFrom();
-		}*/
-	}
-	
-	/*else if ( !Q_stricmp( command, "LoadLastSave_NoConfirm" ) )
-	{
-		if ( IsPC() )
-		{
-			engine->ClientCmd_Unrestricted( "load autosave\n" );
-		}
-	}*/
-	else if (!Q_strcmp(command, "Credits"))
-	{
-		
-	}
 #endif
 	if (!Q_strcmp(command, "showloadoutdialog"))
 	{
-	CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, false);
+		CBaseModPanel::GetSingleton().OpenWindow(WT_DM_LOADOUT, this, false);
 	}
 	else if (!Q_strcmp(command, "QuitGame"))
 	{
@@ -464,9 +387,6 @@ void MainMenu::OnCommand( const char *command )
 		}
 		else
 		{
-			// I'm not entirely sure what this does. Better to be safe than sorry for now.
-			// UNDONE:	Loadout menu is currently NOT a gamemenucommand.
-			//			Though this *should* be safe.
 			engine->ClientCmd_Unrestricted( command );
 			BaseClass::OnCommand( command );
 		}

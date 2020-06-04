@@ -120,6 +120,7 @@ public:
 	void OpenKeyBindingsDialog(vgui::Panel *parent);
 	void OpenCreateMultiplayerGameDialog(vgui::Panel *parent);
 	void OpenPlayerListDialog(vgui::Panel *parent);
+	void OnOpenServerBrowser(vgui::Panel *parent);
 
 private:
 	void SendConnectedToGameMessage();
