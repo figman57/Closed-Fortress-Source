@@ -578,7 +578,7 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_lastActiveUserId( 0 )
 {
 	g_pBasePanel = this;
-	GameUI().SetBasePanel(g_pBasePanel);
+	GameUI().SetMainMenuOverride(g_pBasePanel->GetVPanel());
 
 	MakePopup( false );
 
@@ -3557,3 +3557,8 @@ void CMessageDialogHandler::PositionDialog( vgui::PHandle dlg, int wide, int tal
 	dlg->GetSize(w, t);
 	dlg->SetPos( (wide - w) / 2, (tall - t) / 2 );
 }			
+
+CON_COMMAND_F(qwe, "Refresh main menu", 0)
+{
+	BasePanel()->InvalidateLayout(true, true);
+}

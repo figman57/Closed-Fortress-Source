@@ -116,8 +116,6 @@ public:
 	virtual void SetMainMenuOverride( vgui::VPANEL panel ) = 0;
 	// Client DLL is telling us that a main menu command was issued, probably from its custom main menu panel
 	virtual void SendMainMenuCommand( const char *pszCommand ) = 0;
-
-	virtual void SetBasePanel(IBasePanel* basePanel) = 0;
 };
 
 #define GAMEUI_INTERFACE_VERSION "GameUI011"

@@ -482,7 +482,9 @@ void GenericConfirmation::LoadLayout()
 //=============================================================================
 void GenericConfirmation::PaintBackground()
 {
-	BaseClass::DrawGenericBackground();
+	// Disabled ugly ASW background
+	// BaseClass::DrawGenericBackground();
+
 
 	if ( m_bNeedsMoveToFront )
 	{
@@ -560,7 +562,7 @@ void GenericConfirmation::ApplySchemeSettings(IScheme *pScheme)
 	m_pLblOkButton->SetFont( pScheme->GetFont( "GameUIButtonsMini", true ) );
 	m_pLblCancelButton->SetFont( pScheme->GetFont( "GameUIButtonsMini", true ) );
 
-	m_hTitleFont = pScheme->GetFont( "MainBold", true );
+	m_hTitleFont = pScheme->GetFont( "HudFontSmallBold", true );
 	m_hMessageFont = pScheme->GetFont( "Default", true );
 
 	if ( m_LblTitle )

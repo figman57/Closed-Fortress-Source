@@ -16,6 +16,7 @@
 #include "convar.h"
 
 #include "OptionsDialog.h"
+#include "optionsmousedialog.h"
 #include "PlayerListDialog.h"
 #include "CreateMultiplayerGameDialog.h"
 
@@ -82,8 +83,6 @@ public:
 	virtual bool IsMainMenuVisible(void);
 	virtual void SetMainMenuOverride(vgui::VPANEL panel);
 	virtual void SendMainMenuCommand(const char *pszCommand);
-
-	virtual void SetBasePanel(IBasePanel * basePanel);
 
 	// progress
 	virtual bool UpdateProgressBar(float progress, const char *statusText);
@@ -159,6 +158,7 @@ private:
 	vgui::DHANDLE<COptionsDialog> m_hOptionsDialog;	// standalone options dialog - PC only
 	vgui::DHANDLE<CCreateMultiplayerGameDialog> m_hCreateMultiplayerGameDialog;	// standalone options dialog - PC only	
 	vgui::DHANDLE<CPlayerListDialog> m_hPlayerListDialog;	// standalone options dialog - PC only	
+	vgui::DHANDLE<COptionsMouseDialog> m_hOptionsMouseDialog;	// standalone options dialog - PC only	
 
 	vgui::DHANDLE<class CCDKeyEntryDialog> m_hCDKeyEntryDialog;
 };
