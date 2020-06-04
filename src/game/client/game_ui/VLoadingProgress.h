@@ -44,6 +44,7 @@ public:
 	virtual void		Close();
 
 	void				SetProgress( float progress );
+	void				SetStatusText(const char *statusText);
 	float				GetProgress();
 	bool				IsDoneLoading() { return true; };
 

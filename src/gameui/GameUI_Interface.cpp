@@ -438,13 +438,6 @@ void CGameUI::Start()
 	m_iFriendsLoadPauseFrames = 1;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Validates the user has a cdkey in the registry
-//-----------------------------------------------------------------------------
-void CGameUI::ValidateCDKey() // Remove this function?
-{
-}
-
 #if defined(POSIX)
 // based off game/shared/of/util/os_utils.cpp (momentum mod)
 bool linux_platformdir_helper( char *buf, int size)
@@ -651,7 +644,6 @@ void CGameUI::RunFrame()
 {
 	if ( IsX360() && m_bOpenProgressOnStart )
 	{
-		StartProgressBar();
 		m_bOpenProgressOnStart = false;
 	}
 
@@ -831,13 +823,6 @@ void CGameUI::OnLevelLoadingStarted( bool bShowProgressDialog )
 		panel->OnLevelLoadingStarted(NULL, bShowProgressDialog);
 	}
 
-	ShowLoadingBackgroundDialog();
-
-	if ( bShowProgressDialog )
-	{
-		StartProgressBar();
-	}
-
 	// Don't play the start game sound if this happens before we get to the first frame
 	m_iPlayGameStartupSound = 0;
 }
@@ -847,7 +832,12 @@ void CGameUI::OnLevelLoadingStarted( bool bShowProgressDialog )
 //-----------------------------------------------------------------------------
 void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, const char *extendedReason)
 {
-	StopProgressBar( bError, failureReason, extendedReason );
+	if (bError)
+	{
+		// kill the FUCKING modules so they stop eating precious input
+		GameConsole().Hide();
+		g_VModuleLoader.DeactivateModule("Servers");
+	}
 
 	// notify all the modules
 	g_VModuleLoader.PostMessageToAllModules(new KeyValues("LoadingFinished"));
@@ -871,8 +861,6 @@ void CGameUI::OnLevelLoadingFinished(bool bError, const char *failureReason, con
 		pEvent->SetInt("error", bError);
 		panel->OnLevelLoadingFinished(pEvent);
 	}
-
-	HideLoadingBackgroundDialog();
 }
 
 //-----------------------------------------------------------------------------
@@ -889,113 +877,12 @@ bool CGameUI::UpdateProgressBar(float progress, const char *statusText)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CGameUI::SetProgressLevelName( const char *levelName )
-{
-	MEM_ALLOC_CREDIT();
-
-	if ( g_hLoadingDialog.Get() )
-	{
-		// TODO MRMODEZ: CALL BASEMODPANEL
-		// g_hLoadingDialog->SetLevelName( levelName );
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CGameUI::StartProgressBar()
-{
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: returns true if the screen should be updated
-//-----------------------------------------------------------------------------
-bool CGameUI::ContinueProgressBar( float progressFraction )
-{
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: stops progress bar, displays error if necessary
-//-----------------------------------------------------------------------------
-void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char *extendedReason)
-{
-	if ( bError )
-	{
-		// kill the FUCKING modules so they stop eating precious input
-		GameConsole().Hide();
-		g_VModuleLoader.DeactivateModule("Servers");
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: sets loading info text
-//-----------------------------------------------------------------------------
-bool CGameUI::SetProgressBarStatusText(const char *statusText)
-{
-	if (!g_hLoadingDialog.Get())
-		return false;
-
-	if (!statusText)
-		return false;
-
-	if (!stricmp(statusText, m_szPreviousStatusText))
-		return false;
-
-#if 0
-	// TODO MRMODEZ: CALL BASEMODPANEL
-	g_hLoadingDialog->SetStatusText(statusText);
-#endif
-	Q_strncpy(m_szPreviousStatusText, statusText, sizeof(m_szPreviousStatusText));
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CGameUI::SetSecondaryProgressBar(float progress /* range [0..1] */)
-{
-	if (!g_hLoadingDialog.Get())
-		return;
-
-#if 0
-	// TODO MRMODEZ: CALL BASEMODPANEL
-	g_hLoadingDialog->SetSecondaryProgress(progress);
-#endif
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CGameUI::SetSecondaryProgressBarText(const char *statusText)
-{
-	if (!g_hLoadingDialog.Get())
-		return;
-
-#if 0
-	// TODO MRMODEZ: CALL BASEMODPANEL
-	g_hLoadingDialog->SetSecondaryProgressText(statusText);
-#endif
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Returns prev settings
 //-----------------------------------------------------------------------------
 bool CGameUI::SetShowProgressText( bool show )
 {
-	if (!g_hLoadingDialog.Get())
-		return false;
-
-#if 0
-	// TODO MRMODEZ: CALL BASEMODPANEL
-	return g_hLoadingDialog->SetShowProgressText( show );
-#endif
 	return false;
 }
-
 
 //-----------------------------------------------------------------------------
 // Purpose: returns true if we're currently playing the game
@@ -1050,28 +937,6 @@ bool CGameUI::HasSavedThisMenuSession()
 void CGameUI::SetSavedThisMenuSession( bool bState )
 {
 	m_bHasSavedThisMenuSession = bState;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Makes the loading background dialog visible, if one has been set
-//-----------------------------------------------------------------------------
-void CGameUI::ShowLoadingBackgroundDialog()
-{
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Hides the loading background dialog, if one has been set
-//-----------------------------------------------------------------------------
-void CGameUI::HideLoadingBackgroundDialog()
-{
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns whether a loading background dialog has been set
-//-----------------------------------------------------------------------------
-bool CGameUI::HasLoadingBackgroundDialog()
-{
-	return false;
 }
 
 //-----------------------------------------------------------------------------

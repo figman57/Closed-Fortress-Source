@@ -47,25 +47,6 @@ public:
 	// handles gameUI being shown
 	virtual void OnGameUIActivated() = 0;
 
-	// game dialogs
-	// virtual void OnOpenNewGameDialog(const char *chapter = NULL) = 0;
-	// virtual void OnOpenBonusMapsDialog() = 0;
-	// virtual void OnOpenLoadGameDialog() = 0;
-	// virtual void OnOpenSaveGameDialog() = 0;
-	// virtual void OnOpenServerBrowser() = 0;
-	// virtual void OnOpenFriendsDialog() = 0;
-	// virtual void OnOpenDemoDialog() = 0;
-	// virtual void OnOpenCreateMultiplayerGameDialog() = 0;
-	// virtual void OnOpenQuitConfirmationDialog() = 0;
-	// virtual void OnOpenDisconnectConfirmationDialog() = 0;
-	// virtual void OnOpenChangeGameDialog() = 0;
-	// virtual void OnOpenPlayerListDialog() = 0;
-	// virtual void OnOpenBenchmarkDialog() = 0;
-	// virtual void OnOpenOptionsDialog() = 0;
-	// virtual void OnOpenLoadCommentaryDialog() = 0;
-	// virtual void OpenLoadSingleplayerCommentaryDialog() = 0;
-	// virtual void OnOpenAchievementsDialog() = 0;
-
 	//=============================================================================
 	// HPE_BEGIN:
 	// [dwenger] Specific code for CS Achievements Display

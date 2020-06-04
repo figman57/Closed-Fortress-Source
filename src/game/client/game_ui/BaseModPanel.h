@@ -129,7 +129,6 @@ namespace BaseModUI
 		void OnLevelLoadingStarted( char const *levelName, bool bShowProgressDialog );
 		void OnLevelLoadingFinished( KeyValues *kvEvent );
 		bool UpdateProgressBar(float progress, const char *statusText);
-		void OnCreditsFinished(void);
 
 		void SetHelpText( const char* helpText );
 		void SetOkButtonEnabled( bool enabled );

@@ -1667,12 +1667,13 @@ bool CBaseModPanel::UpdateProgressBar( float progress, const char *statusText )
 	static float s_LastEngineTime = -1.0f;
 	// clock the anim at 10hz
 	float time = Plat_FloatTime();
-	// float deltaTime = time - s_LastEngineTime;
+	float deltaTime = time - s_LastEngineTime;
 
-	if ( loadingProgress ) //  && ( ( loadingProgress->IsDrawingProgressBar() && ( loadingProgress->GetProgress() < progress ) ) || ( deltaTime > 0.06f ) ) )
+	if ( loadingProgress && ( ( loadingProgress->IsDrawingProgressBar() && ( loadingProgress->GetProgress() < progress ) ) || ( deltaTime > 0.06f ) ) )
 	{
 		// update progress
 		loadingProgress->SetProgress( progress );
+		loadingProgress->SetStatusText(statusText);
 		s_LastEngineTime = time;
 
 		if ( UI_IsDebug() )

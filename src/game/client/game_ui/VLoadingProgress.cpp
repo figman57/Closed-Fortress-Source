@@ -237,6 +237,15 @@ void LoadingProgress::SetProgress( float progress )
 	UpdateWorkingAnim();
 }
 
+void LoadingProgress::SetStatusText(const char * statusText)
+{
+	if (statusText)
+	{
+		vgui::Label *pLoadingText = dynamic_cast<vgui::Label*>(FindChildByName("LoadingText"));
+		pLoadingText->SetText(statusText);
+	}
+}
+
 //=============================================================================
 float LoadingProgress::GetProgress()
 {
