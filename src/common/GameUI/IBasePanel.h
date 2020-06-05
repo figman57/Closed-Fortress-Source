@@ -24,7 +24,6 @@
 class IBasePanel
 {
 public:
-	// virtual CBaseModPanel() = 0;
 	virtual ~IBasePanel() {}
 
 	virtual vgui::Panel& GetVguiPanel() = 0;
@@ -38,65 +37,9 @@ public:
 	// update the taskbar a frame
 	virtual void RunFrame() = 0;
 
-	// fades to black then runs an engine command (usually to start a level)
-	virtual void FadeToBlackAndRunEngineCommand(const char *engineCommand) = 0;
-
-	// sets the blinking state of a menu item
-	virtual void SetMenuItemBlinkingState(const char *itemName, bool state) = 0;
-
 	// handles gameUI being shown
 	virtual void OnGameUIActivated() = 0;
-
-	//=============================================================================
-	// HPE_BEGIN:
-	// [dwenger] Specific code for CS Achievements Display
-	//=============================================================================
-
-	// $TODO(HPE): Move this to a game-specific location
-	// virtual void OnOpenCSAchievementsDialog() = 0;
-
-	//=============================================================================
-	// HPE_END
-	//=============================================================================
-
-	// virtual void OnOpenControllerDialog() = 0;
-
-	// virtual void SessionNotification(const int notification, const int param = 0) = 0;
-	// virtual void SystemNotification(const int notification) = 0;
-	// virtual void ShowMessageDialog(const uint nType, vgui::Panel *pParent = NULL) = 0;
-	virtual void CloseMessageDialog(const uint nType) = 0;
-	// virtual void UpdatePlayerInfo(uint64 nPlayerId, const char *pName, int nTeam, byte cVoiceState, int nPlayersNeeded, bool bHost) = 0;
-	// virtual void SessionSearchResult(int searchIdx, void *pHostData, XSESSION_SEARCHRESULT *pResult, int ping) = 0;
-	// virtual void OnChangeStorageDevice() = 0;
-	// virtual bool ValidateStorageDevice() = 0;
-	// virtual bool ValidateStorageDevice(int *pStorageDeviceValidated) = 0;
-	// virtual void OnCreditsFinished() = 0;
-
-	virtual KeyValues *GetConsoleControlSettings(void) = 0;
-	// 
-	// // forces any changed options dialog settings to be applied immediately, if it's open
-	// virtual void ApplyOptionsDialogSettings() = 0;
-	// 
-	// // virtual vgui::AnimationController *GetAnimationController(void) { return m_pConsoleAnimationController; }
-	virtual void RunCloseAnimation(const char *animName) = 0;
-	// virtual void RunAnimationWithCallback(vgui::Panel *parent, const char *animName, KeyValues *msgFunc) = 0;
-	// virtual void PositionDialog(vgui::PHandle dlg) = 0;
-	// 
-	// virtual void ArmFirstMenuItem(void) = 0;
-	// 
 	virtual void OnGameUIHidden() = 0;
-	// 
-	// virtual void CloseBaseDialogs(void) = 0;
-	// // virtual bool IsWaitingForConsoleUI(void) { return m_bWaitingForStorageDeviceHandle || m_bWaitingForUserSignIn || m_bXUIVisible; }
-	// 
-	// virtual int  GetMenuAlpha(void) = 0;
-	// 
-	// virtual void SetMainMenuOverride(vgui::VPANEL panel) = 0;
-	// 
-	// // FIXME: This should probably become a friend relationship between the classes
-	// virtual bool HandleSignInRequest(const char *command) = 0;
-	// virtual bool HandleStorageDeviceRequest(const char *command) = 0;
-	// virtual void ClearPostPromptCommand(const char *pCompletedCommand) = 0;
 };
 
 #endif

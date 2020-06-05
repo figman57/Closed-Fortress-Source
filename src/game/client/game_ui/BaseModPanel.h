@@ -37,25 +37,6 @@ enum
 	DIALOG_STACK_IDX_ERROR,
 };
 
-// X360TBD: Move into a separate module when finished
-class CMessageDialogHandler
-{
-public:
-	CMessageDialogHandler();
-	void ShowMessageDialog(int nType, vgui::Panel *pOwner);
-	void CloseMessageDialog(const uint nType = 0);
-	void CloseAllMessageDialogs();
-	void CreateMessageDialog(const uint nType, const char *pTitle, const char *pMsg, const char *pCmdA, const char *pCmdB, vgui::Panel *pCreator, bool bShowActivity = false);
-	void ActivateMessageDialog(int nStackIdx);
-	void PositionDialogs(int wide, int tall);
-	void PositionDialog(vgui::PHandle dlg, int wide, int tall);
-
-private:
-	static const int MAX_MESSAGE_DIALOGS = 3;
-	vgui::DHANDLE< CMessageDialog > m_hMessageDialogs[MAX_MESSAGE_DIALOGS];
-	int							m_iDialogStackTop;
-};
-
 // must supply some non-trivial time to let the movie startup smoothly
 // the attract screen also uses this so it doesn't pop in either
 #define TRANSITION_TO_MOVIE_DELAY_TIME	0.5f	// how long to wait before starting the fade
@@ -214,107 +195,12 @@ namespace BaseModUI
 		void ReleaseStartupGraphic();
 		void DrawStartupGraphic( float flNormalizedAlpha );
 		IVTFTexture			*m_pBackgroundTexture;
-
-	public:
-		//2007 src GameUI port for use of HL2 panels
-		vgui::AnimationController *GetOldAnimationController(void) { return m_pConsoleAnimationController; } //was GetAnimationController but that conflicts with existing ASW GameUI functions
-		void RunCloseAnimation(const char *animName);
-		void RunAnimationWithCallback(vgui::Panel *parent, const char *animName, KeyValues *msgFunc);
-		vgui::AnimationController	*m_pConsoleAnimationController;
-		void ShowMessageDialog(const uint nType, vgui::Panel *pParent = NULL);
-		CMessageDialogHandler		m_MessageDialogHandler;
-		KeyValues					*m_pConsoleControlSettings;
-		KeyValues *GetConsoleControlSettings(void);
-		void FadeToBlackAndRunEngineCommand(const char *engineCommand);// fades to black then runs an engine command (usually to start a level)
-		void SetMenuItemBlinkingState(const char *itemName, bool state); // sets the blinking state of a menu item
-		void PositionDialog(vgui::PHandle dlg);
-		
-		void CloseMessageDialog(const uint nType);
 	};
 
 	//-----------------------------------------------------------------------------
 	// Purpose: singleton accessor
 	//-----------------------------------------------------------------------------
 	extern CBaseModPanel *BasePanel();
-};
-
-//-----------------------------------------------------------------------------
-// Purpose: Transparent menu item designed to sit on the background ingame
-//-----------------------------------------------------------------------------
-class CGameMenuItem : public vgui::MenuItem
-{
-	DECLARE_CLASS_SIMPLE( CGameMenuItem, vgui::MenuItem );
-public:
-	CGameMenuItem(vgui::Menu *parent, const char *name);
-
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void PaintBackground( void );
-	void SetRightAlignedText( bool state );
-
-private:
-	bool		m_bRightAligned;
-};
-
-//-----------------------------------------------------------------------------
-// Purpose: Panel that acts as background for button icons and help text in the UI
-//-----------------------------------------------------------------------------
-class CFooterPanel : public vgui::EditablePanel
-{
-	DECLARE_CLASS_SIMPLE( CFooterPanel, vgui::EditablePanel );
-
-public:
-	CFooterPanel( Panel *parent, const char *panelName );
-	virtual ~CFooterPanel();
-
-	virtual void	ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void	ApplySettings( KeyValues *pResourceData );
-	virtual void	Paint( void );
-	virtual void	PaintBackground( void );
-
-	// caller tags the current hint, used to assist in ownership
-	void			SetHelpNameAndReset( const char *pName );
-	const char		*GetHelpName();
-
-	void			AddButtonsFromMap( vgui::Frame *pMenu );
-	void			SetStandardDialogButtons();
-	void			AddNewButtonLabel( const char *text, const char *icon );
-	void			ShowButtonLabel( const char *name, bool show = true );
-	void			SetButtonText( const char *buttonName, const char *text );
-	void			ClearButtons();
-	void			SetButtonGap( int nButtonGap ){ m_nButtonGap = nButtonGap; }
-	void			UseDefaultButtonGap(){ m_nButtonGap = m_nButtonGapDefault; }
-
-private:
-	struct ButtonLabel_t
-	{
-		bool	bVisible;
-		char	name[MAX_PATH];
-		wchar_t	text[MAX_PATH];
-		wchar_t	icon[2];			// icon is a single character
-	};
-
-	CUtlVector< ButtonLabel_t* > m_ButtonLabels;
-
-	vgui::Label		*m_pSizingLabel;		// used to measure font sizes
-
-	bool			m_bPaintBackground;		// fill the background?
-	bool			m_bCenterHorizontal;	// center buttons horizontally?
-	int				m_ButtonPinRight;		// if not centered, this is the distance from the right margin that we use to start drawing buttons (right to left)
-	int				m_nButtonGap;			// space between buttons when drawing
-	int				m_nButtonGapDefault;		// space between buttons (initial value)
-	int				m_FooterTall;			// height of the footer
-	int				m_ButtonOffsetFromTop;	// how far below the top the buttons should be drawn
-	int				m_ButtonSeparator;		// space between the button icon and text
-	int				m_TextAdjust;			// extra adjustment for the text (vertically)...text is centered on the button icon and then this value is applied
-
-	char			m_szTextFont[64];		// font for the button text
-	char			m_szButtonFont[64];		// font for the button icon
-	char			m_szFGColor[64];		// foreground color (text)
-	char			m_szBGColor[64];		// background color (fill color)
-	
-	vgui::HFont		m_hButtonFont;
-	vgui::HFont		m_hTextFont;
-	char			*m_pHelpName;
 };
 
 #endif
