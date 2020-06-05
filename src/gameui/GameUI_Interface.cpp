@@ -160,7 +160,6 @@ CGameUI::CGameUI()
 	m_bIsConsoleUI = false;
 	m_bHasSavedThisMenuSession = false;
 	m_bOpenProgressOnStart = false;
-	m_iPlayGameStartupSound = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -293,75 +292,7 @@ int __stdcall SendShutdownMsgFunc(WHANDLE hwnd, int lparam)
 //-----------------------------------------------------------------------------
 void CGameUI::PlayGameStartupSound()
 {
-#if defined( LEFT4DEAD )
-	// L4D not using this path, L4D UI now handling with background menu movies
-	return;
-#endif
-
-	if ( IsX360() )
-		return;
-
-	if ( CommandLine()->FindParm( "-nostartupsound" ) )
-		return;
-
-	// TODO MRMODEZ MOVE TO BASEMODPANEL
-
-	FileFindHandle_t fh;
-
-	CUtlVector<char *> fileNames;
-
-	char path[ 512 ];
-	Q_snprintf( path, sizeof( path ), "sound/ui/gamestartup*.mp3" );
-	Q_FixSlashes( path );
-
-	char const *fn = g_pFullFileSystem->FindFirstEx( path, "MOD", &fh );
-	if ( fn )
-	{
-		do
-		{
-			char ext[ 10 ];
-			Q_ExtractFileExtension( fn, ext, sizeof( ext ) );
-
-			if ( !Q_stricmp( ext, "mp3" ) )
-			{
-				char temp[ 512 ];
-				Q_snprintf( temp, sizeof( temp ), "ui/%s", fn );
-
-				char *found = new char[ strlen( temp ) + 1 ];
-				Q_strncpy( found, temp, strlen( temp ) + 1 );
-
-				Q_FixSlashes( found );
-				fileNames.AddToTail( found );
-			}
-	
-			fn = g_pFullFileSystem->FindNext( fh );
-
-		} while ( fn );
-
-		g_pFullFileSystem->FindClose( fh );
-	}
-
-	// did we find any?
-	if ( fileNames.Count() > 0 )
-	{
-#if defined( WIN32 ) && !defined( _X360 )
-		SYSTEMTIME SystemTime;
-		GetSystemTime( &SystemTime );
-		int index = SystemTime.wMilliseconds % fileNames.Count();
-
-		if ( fileNames.IsValidIndex( index ) && fileNames[index] )
-		{
-			char found[ 512 ];
-
-			// escape chars "*#" make it stream, and be affected by snd_musicvolume
-			Q_snprintf( found, sizeof( found ), "play *#%s", fileNames[index] );
-
-			engine->ClientCmd_Unrestricted( found );
-		}
-#endif
-
-		fileNames.PurgeAndDeleteElements();
-	}
+	// MrModez: Moved to BaseModPanel
 }
 
 //-----------------------------------------------------------------------------
@@ -427,10 +358,6 @@ void CGameUI::Start()
 		}
 	}
 #endif // _WIN32
-
-	// Delay playing the startup music until two frames
-	// this allows cbuf commands that occur on the first frame that may start a map
-	m_iPlayGameStartupSound = 2;
 
 	// now we are set up to check every frame to see if we can friends/server browser
 	m_bTryingToLoadFriends = true;
@@ -674,16 +601,6 @@ void CGameUI::RunFrame()
 	
 	vgui::GetAnimationController()->UpdateAnimations(Plat_FloatTime());
 
-	// Play the start-up music the first time we run frame
-	if ( IsPC() && m_iPlayGameStartupSound > 0 )
-	{
-		m_iPlayGameStartupSound--;
-		if ( !m_iPlayGameStartupSound )
-		{
-			PlayGameStartupSound();
-		}
-	}
-
 	// On POSIX and Mac OSX just load it without any care for race conditions
 	// hackhack: posix steam gameui usage is rude and racey
 	// -nopey
@@ -821,9 +738,6 @@ void CGameUI::OnLevelLoadingStarted( bool bShowProgressDialog )
 	{
 		panel->OnLevelLoadingStarted(NULL, bShowProgressDialog);
 	}
-
-	// Don't play the start game sound if this happens before we get to the first frame
-	m_iPlayGameStartupSound = 0;
 }
 
 //-----------------------------------------------------------------------------

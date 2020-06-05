@@ -132,7 +132,6 @@ private:
 	int m_iGameQueryPort;
 	
 	int m_iFriendsLoadPauseFrames;
-	int m_iPlayGameStartupSound;
 
 	char m_szPreviousStatusText[128];
 	char m_szPlatformDir[MAX_PATH];

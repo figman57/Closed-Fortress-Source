@@ -1,5 +1,4 @@
 #include "cbase.h"
-
 #include "BaseModPanel.h"
 #include "./GameUI/IGameUI.h"
 #include "ienginevgui.h"
@@ -269,9 +268,10 @@ m_lastActiveUserId(0)
 
 	m_iBackgroundImageID = -1;
 	m_iProductImageID = -1;
-
-	m_backgroundMusic = "MenuMusicSong";
-	m_nBackgroundMusicGUID = 0;
+	
+	// Delay playing the startup music until two frames
+	// this allows cbuf commands that occur on the first frame that may start a map
+	m_iPlayGameStartupSound = 2;
 
 	m_nProductImageWide = 0;
 	m_nProductImageTall = 0;
@@ -792,11 +792,13 @@ void CBaseModPanel::OnDemoTimeout()
 
 bool CBaseModPanel::ActivateBackgroundEffects()
 {
+#if 0
 	// PC needs to keep start music, can't loop MP3's
 	if ( IsPC() && !IsBackgroundMusicPlaying() )
 	{
 		StartBackgroundMusic( 1.0f );
 	}
+#endif
 
 	return true;
 }
@@ -996,6 +998,16 @@ void CBaseModPanel::RunFrame()
 
 	GetAnimationController()->UpdateAnimations( Plat_FloatTime() );
 
+	// Play the start-up music the first time we run frame
+	if (IsPC() && m_iPlayGameStartupSound > 0)
+	{
+		m_iPlayGameStartupSound--;
+		if (!m_iPlayGameStartupSound)
+		{
+			PlayGameStartupSound();
+		}
+	}
+
 	CBaseModFrame::RunFrameOnListeners();
 
 	CUIGameData::Get()->RunFrame();
@@ -1081,6 +1093,9 @@ void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProg
 	Assert( !m_LevelLoading );
 
 	CloseAllWindows();
+
+	// Don't play the start game sound if this happens before we get to the first frame
+	m_iPlayGameStartupSound = 0;
 
 	if ( UI_IsDebug() )
 	{
@@ -2029,6 +2044,68 @@ void CBaseModPanel::OnMovedPopupToFront()
 	GameConsole().Hide();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Searches for GameStartup*.mp3 files in the sound/ui folder and plays one
+//-----------------------------------------------------------------------------
+void CBaseModPanel::PlayGameStartupSound()
+{
+	if (CommandLine()->FindParm("-nostartupsound"))
+		return;
+
+	FileFindHandle_t fh;
+
+	CUtlVector<char *> fileNames;
+
+	char path[512];
+	Q_snprintf(path, sizeof(path), "sound/ui/gamestartup*.mp3");
+	Q_FixSlashes(path);
+
+	char const *fn = g_pFullFileSystem->FindFirstEx(path, "MOD", &fh);
+	if (fn)
+	{
+		do
+		{
+			char ext[10];
+			Q_ExtractFileExtension(fn, ext, sizeof(ext));
+
+			if (!Q_stricmp(ext, "mp3"))
+			{
+				char temp[512];
+				Q_snprintf(temp, sizeof(temp), "ui/%s", fn);
+
+				char *found = new char[strlen(temp) + 1];
+				Q_strncpy(found, temp, strlen(temp) + 1);
+
+				Q_FixSlashes(found);
+				fileNames.AddToTail(found);
+			}
+
+			fn = g_pFullFileSystem->FindNext(fh);
+
+		} while (fn);
+
+		g_pFullFileSystem->FindClose(fh);
+	}
+
+	// did we find any?
+	if (fileNames.Count() > 0)
+	{
+		int index = RandomInt(0, fileNames.Count() - 1);
+		if (fileNames.IsValidIndex(index) && fileNames[index])
+		{
+			char found[512];
+
+			// escape chars "*#" make it stream, and be affected by snd_musicvolume
+			Q_snprintf(found, sizeof(found), "play *#%s", fileNames[index]);
+
+			engine->ClientCmd_Unrestricted(found);
+		}
+
+		fileNames.PurgeAndDeleteElements();
+	}
+}
+
+#if 0
 bool CBaseModPanel::IsBackgroundMusicPlaying()
 {
 	if ( m_backgroundMusic.IsEmpty() )
@@ -2090,6 +2167,7 @@ void CBaseModPanel::ReleaseBackgroundMusic()
 
 	m_nBackgroundMusicGUID = 0;
 }
+#endif
 
 void CBaseModPanel::SafeNavigateTo( Panel *pExpectedFrom, Panel *pDesiredTo, bool bAllowStealFocus )
 {
