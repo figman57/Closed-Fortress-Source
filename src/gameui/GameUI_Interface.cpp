@@ -115,7 +115,6 @@ static CGameUI g_GameUI;
 static WHANDLE g_hMutex = NULL;
 static WHANDLE g_hWaitMutex = NULL;
 
-
 static IGameClientExports *g_pGameClientExports = NULL;
 IGameClientExports *GameClientExports()
 {
@@ -136,11 +135,11 @@ CGameUI &GameUI()
 //-----------------------------------------------------------------------------
 vgui::VPANEL GetGameUIBasePanel()
 {
-	if (!GetBasePanel())
+	if (!enginevguifuncs)
 	{
 		Assert(0);
 	}
-	return GetBasePanel()->GetVguiPanel().GetVPanel();
+	return enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
 }
 
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameUI, IGameUI, GAMEUI_INTERFACE_VERSION, g_GameUI);
@@ -1086,14 +1085,12 @@ void CGameUI::SetMainMenuOverride(vgui::VPANEL panel)
 	{
 		Assert(0);
 	}
-	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
-	gBasePanel->GetVguiPanel().SetParent(rootpanel);
+	gBasePanel->GetVguiPanel().SetParent(GetGameUIBasePanel());
 }
 
 void CGameUI::SendMainMenuCommand(const char *pszCommand)
 {
-	vgui::VPANEL rootpanel = enginevguifuncs->GetPanel(PANEL_GAMEUIDLL);
-	vgui::Panel *pGameUIPanel = vgui::ipanel()->GetPanel(rootpanel, "GameUI");
+	vgui::Panel *pGameUIPanel = vgui::ipanel()->GetPanel(GetGameUIBasePanel(), "GameUI");
 
 	if (!Q_strcmp(pszCommand, "OpenOptionsDialog"))
 	{

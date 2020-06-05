@@ -167,11 +167,6 @@ IGameConsole& GameConsole()
 	return *g_pGameConsole;
 }
 
-vgui::VPANEL GetGameUIBasePanel()
-{
-	return BasePanel()->GetVPanel();
-}
-
 KeyValues* gBackgroundSettings;
 KeyValues* BackgroundSettings()
 {
@@ -1554,7 +1549,7 @@ void CBaseModPanel::PaintBackground()
 		int wide, tall;
 		GetSize( wide, tall );
 
-#if 0
+#if 1
 		if ( true /*engine->IsTransitioningToLoad()*/ )
 		{
 			ActivateBackgroundEffects();
