@@ -100,7 +100,7 @@ namespace BaseModUI {
 		bool CheckAndDisplayErrorIfNotLoggedIn();	// Displays error if not logged into Steam (no-op on X360)
 
 		void DrawGenericBackground();
-		void DrawDialogBackground( const char *pMajor, const wchar_t *pMajorFormatted, const char *pMinor, const wchar_t *pMinorFormatted, DialogMetrics_t *pMetrics = NULL, bool bAllCapsTitle = false, int iTitleXOffset = INT_MAX );
+		void DrawDialogBackground(const char *pMajor = NULL, const wchar_t *pMajorFormatted = NULL, const char *pMinor = NULL, const wchar_t *pMinorFormatted = NULL, DialogMetrics_t *pMetrics = NULL, bool bAllCapsTitle = false, int iTitleXOffset = INT_MAX);
 		void SetupAsDialogStyle();
 		int DrawSmearBackground( int x, int y, int wide, int tall, bool bIsFooter = false );
 		int DrawBlackBackground( int x, int y, int wide, int tall, bool bIsFooter = false );	

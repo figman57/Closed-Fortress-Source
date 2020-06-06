@@ -69,6 +69,8 @@
 #include "vtestpanel.h"
 #include "of/game_ui/VDMLoadout.h"
 
+#include "transitionpanel.h"
+
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
 #include "vgui/ILocalize.h"
@@ -116,14 +118,6 @@ bool g_bIsCreatingNewGameMenuForPreFetching = false;
 
 //=============================================================================
 CBaseModPanel* CBaseModPanel::m_CFactoryBasePanel = 0;
-
-//-----------------------------------------------------------------------------
-// Purpose: singleton accessor
-//-----------------------------------------------------------------------------
-CBaseModPanel *BaseModUI::BasePanel()
-{
-	return g_pBasePanel;
-}
 
 static CDllDemandLoader g_GameUIDLL("GameUI");
 
@@ -282,6 +276,10 @@ m_lastActiveUserId(0)
 	//Make it pausable When we reload, the game stops pausing on +esc
 	ConVar *sv_pausable = cvar->FindVar("sv_pausable");
 	sv_pausable->SetValue(1);
+	   
+	m_pTransitionPanel = new CBaseModTransitionPanel("TransitionPanel");
+	// m_pTransitionPanel->SetParent(enginevgui->GetPanel(PANEL_GAMEUIDLL));
+	m_pTransitionPanel->SetParent(this);
 }
 
 //=============================================================================
@@ -530,6 +528,9 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		newNav->InvalidateLayout(false, false);
 		newNav->OnOpen();
 	}
+
+	GetTransitionEffectPanel()->MoveToFront();
+	GetTransitionEffectPanel()->SetExpectedDirection(true, wt);
 
 	if ( UI_IsDebug() && (wt != WT_LOADINGPROGRESS) )
 	{
@@ -792,14 +793,6 @@ void CBaseModPanel::OnDemoTimeout()
 
 bool CBaseModPanel::ActivateBackgroundEffects()
 {
-#if 0
-	// PC needs to keep start music, can't loop MP3's
-	if ( IsPC() && !IsBackgroundMusicPlaying() )
-	{
-		StartBackgroundMusic( 1.0f );
-	}
-#endif
-
 	return true;
 }
 
@@ -810,6 +803,8 @@ void CBaseModPanel::OnGameUIActivated()
 	{
 		Msg( "[GAMEUI] CBaseModPanel::OnGameUIActivated( delay = %d )\n", m_DelayActivation );
 	}
+
+	GetTransitionEffectPanel()->SetInitialState();
 
 	if ( m_DelayActivation )
 	{
@@ -998,16 +993,6 @@ void CBaseModPanel::RunFrame()
 
 	GetAnimationController()->UpdateAnimations( Plat_FloatTime() );
 
-	// Play the start-up music the first time we run frame
-	if (IsPC() && m_iPlayGameStartupSound > 0)
-	{
-		m_iPlayGameStartupSound--;
-		if (!m_iPlayGameStartupSound)
-		{
-			PlayGameStartupSound();
-		}
-	}
-
 	CBaseModFrame::RunFrameOnListeners();
 
 	CUIGameData::Get()->RunFrame();
@@ -1022,6 +1007,16 @@ void CBaseModPanel::RunFrame()
 				Msg( "[GAMEUI] Executing delayed UI activation\n");
 			}
 			OnGameUIActivated();
+		}
+	}
+
+	// MRMODEZ TODO: New fancy music player
+	if (IsPC() && m_iPlayGameStartupSound > 0)
+	{
+		m_iPlayGameStartupSound--;
+		if (!m_iPlayGameStartupSound)
+		{
+			PlayGameStartupSound();
 		}
 	}
 
@@ -1057,34 +1052,6 @@ void CBaseModPanel::RunFrame()
 		m_flBlurScale = clamp( m_flBlurScale, 0, 0.85f );
 		//engine->SetBlurFade( m_flBlurScale );
 	}
-
-#if 0
-	if ( IsX360() && m_ExitingFrameCount )
-	{
-		CTransitionScreen *pTransitionScreen = static_cast< CTransitionScreen* >( GetWindow( WT_TRANSITIONSCREEN ) );
-		if ( pTransitionScreen && pTransitionScreen->IsTransitionComplete() )
-		{
-			if ( m_ExitingFrameCount > 1 )
-			{
-				m_ExitingFrameCount--;
-				if ( m_ExitingFrameCount == 1 )
-				{
-					// enough frames have transpired, send the single shot quit command
-					if ( m_bWarmRestartMode )
-					{
-						// restarts self, skips any intros
-						engine->ClientCmd_Unrestricted( "quit_x360 restart\n" );
-					}
-					else
-					{
-						// cold restart, quits to any startup app
-						engine->ClientCmd_Unrestricted( "quit_x360\n" );
-					}
-				}
-			}
-		}
-	}
-#endif
 }
 
 //=============================================================================
@@ -1440,32 +1407,6 @@ void CBaseModPanel::ApplySchemeSettings(IScheme *pScheme)
 	{
 		Q_snprintf( m_szFadeFilename, sizeof( m_szFadeFilename ), "materials/console/%s_widescreen.vtf", "background01" );
 	}
-
-	// TODO: GetBackgroundMusic
-#if 0
-
-	bool bUseMono = false;
-#if defined( _X360 )
-	// cannot use the very large stereo version during the install
-	 bUseMono = g_pXboxInstaller->IsInstallEnabled() && !g_pXboxInstaller->IsFullyInstalled();
-#if defined( _DEMO )
-	bUseMono = true;
-#endif
-#endif
-
-	char backgroundMusic[MAX_PATH];
-	engine->GetBackgroundMusic( backgroundMusic, sizeof( backgroundMusic ), bUseMono );
-
-	// the precache will be a memory or stream wave as needed 
-	// on 360 the sound system will detect the install state and force it to a memory wave to finalize the the i/o now
-	// it will be a stream resource if the installer is dormant
-	// On PC it will be a streaming MP3
-	if ( enginesound->PrecacheSound( backgroundMusic, true, false ) )
-	{
-		// successfully precached
-		m_backgroundMusic = backgroundMusic;
-	}
-#endif
 }
 
 void CBaseModPanel::DrawColoredText( vgui::HFont hFont, int x, int y, unsigned int color, const char *pAnsiText )
@@ -1556,6 +1497,11 @@ void CBaseModPanel::DrawCopyStats()
 #endif
 }
 
+CBaseModTransitionPanel *CBaseModPanel::GetTransitionEffectPanel()
+{
+	return m_pTransitionPanel;
+}
+
 //=============================================================================
 void CBaseModPanel::PaintBackground()
 {
@@ -1564,7 +1510,7 @@ void CBaseModPanel::PaintBackground()
 		int wide, tall;
 		GetSize( wide, tall );
 
-#if 1
+#if 0
 		if ( true /*engine->IsTransitioningToLoad()*/ )
 		{
 			ActivateBackgroundEffects();
@@ -2105,70 +2051,6 @@ void CBaseModPanel::PlayGameStartupSound()
 	}
 }
 
-#if 0
-bool CBaseModPanel::IsBackgroundMusicPlaying()
-{
-	if ( m_backgroundMusic.IsEmpty() )
-		return false;
-
-	if ( m_nBackgroundMusicGUID == 0 )
-		return false;
-	
-	return enginesound->IsSoundStillPlaying( m_nBackgroundMusicGUID );
-}
-
-// per Morasky
-#define BACKGROUND_MUSIC_DUCK	0.15f
-
-bool CBaseModPanel::StartBackgroundMusic( float fVol )
-{
-	if ( IsBackgroundMusicPlaying() )
-		return true;
-	
-	if ( m_backgroundMusic.IsEmpty() )
-		return false;
-
-	// trying to exit, cannot start it
-	if ( m_ExitingFrameCount )
-		return false;
-	
-	CSoundParameters params;
-	if ( !soundemitterbase->GetParametersForSound( m_backgroundMusic.Get(), params, GENDER_NONE ) )
-		return false;
-
-	enginesound->EmitAmbientSound( params.soundname, params.volume * fVol, params.pitch );
-	m_nBackgroundMusicGUID = enginesound->GetGuidForLastSoundEmitted();
-		
-	return ( m_nBackgroundMusicGUID != 0 );
-}
-void CBaseModPanel::UpdateBackgroundMusicVolume( float fVol )
-{
-	if ( !IsBackgroundMusicPlaying() )
-		return;
-
-	// mixes too loud against soft ui sounds
-	enginesound->SetVolumeByGuid( m_nBackgroundMusicGUID, BACKGROUND_MUSIC_DUCK * fVol );
-}
-
-void CBaseModPanel::ReleaseBackgroundMusic()
-{
-	if ( m_backgroundMusic.IsEmpty() )
-		return;
-
-	if ( m_nBackgroundMusicGUID == 0 )
-		return;
-
-	// need to stop the sound now, do not queue the stop
-	// we must release the 2-5 MB held by this resource
-	enginesound->StopSoundByGuid( m_nBackgroundMusicGUID );
-#if defined( _X360 )
-	// TODO: enginesound->UnloadSound( m_backgroundMusic );
-#endif
-
-	m_nBackgroundMusicGUID = 0;
-}
-#endif
-
 void CBaseModPanel::SafeNavigateTo( Panel *pExpectedFrom, Panel *pDesiredTo, bool bAllowStealFocus )
 {
 	Panel *pOriginalFocus = ipanel()->GetPanel( GetCurrentKeyFocus(), GetModuleName() );
@@ -2187,5 +2069,10 @@ void CBaseModPanel::SafeNavigateTo( Panel *pExpectedFrom, Panel *pDesiredTo, boo
 
 CON_COMMAND_F(gamemenurefresh, "Refresh main menu", 0)
 {
-	BasePanel()->InvalidateLayout(true, true);
+	CBaseModPanel::GetSingleton().InvalidateLayout(true, true);
+}
+
+CON_COMMAND_F(testest, "Refresh main menu", 0)
+{
+	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MarkTilesInRect(20, 20, 1000, 1000, WT_DM_LOADOUT, true);
 }

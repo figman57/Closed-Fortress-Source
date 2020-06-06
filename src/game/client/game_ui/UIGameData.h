@@ -64,7 +64,7 @@ namespace BaseModUI
 		CUtlMap< XUID, CUtlString > m_mapUserXuidToName;
 
 		//XUI info
-		bool m_bXUIOpen;
+		bool m_bXUIOpen = false;
 
 		//char const * GetPlayerName( XUID playerID, char const *szPlayerNameSpeculative );
 	};

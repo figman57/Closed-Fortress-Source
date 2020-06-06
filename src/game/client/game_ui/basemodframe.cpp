@@ -7,9 +7,9 @@
 #include "cbase.h"
 
 #include <ctype.h>
+#include "basemodpanel.h"
 #include "basemodframe.h"
-
-#include "BaseModPanel.h"
+#include "transitionpanel.h"
 // #include "EngineInterface.h"
 
 #include "VFooterPanel.h"
@@ -399,7 +399,10 @@ Panel* CBaseModFrame::NavigateBack()
 	{
 		SetFadeEffectDisableOverride(false);
 	}
-
+	
+	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MoveToFront();
+	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->SetExpectedDirection(false, navBack ? navBack->GetWindowType() : WT_NONE);
+	
 	return navBack;
 }
 
@@ -452,6 +455,7 @@ void CBaseModFrame::PostChildPaint()
 void CBaseModFrame::PaintBackground()
 {
 	BaseClass::PaintBackground();
+	DrawDialogBackground();
 }
 
 //=============================================================================
@@ -924,6 +928,12 @@ void CBaseModFrame::DrawDialogBackground( const char *pMajor, const wchar_t *pMa
 
 	int topBorderTall = scheme()->GetProportionalScaledValue( TOP_BORDER_HEIGHT );
 	int bottomBorderTall = scheme()->GetProportionalScaledValue( BOTTOM_BORDER_HEIGHT );
+
+	int width;
+	int height;
+	GetSize(width, height);
+	// CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MoveToFront();
+	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MarkTilesInRect(0, 0, width, height, m_WindowType);
 
 	// resolve the major title
 	wchar_t szMajor[256];

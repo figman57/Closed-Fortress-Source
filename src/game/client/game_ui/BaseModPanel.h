@@ -59,6 +59,7 @@ namespace BaseModUI
 
 	class CBaseModFrame;
 	class CBaseModFooterPanel;
+	class CBaseModTransitionPanel;
 
 	//=============================================================================
 	//
@@ -123,15 +124,10 @@ namespace BaseModUI
 		CBaseModFooterPanel* GetFooterPanel();
 		void SetLastActiveUserId( int userId );
 		int GetLastActiveUserId();
+
+		CBaseModTransitionPanel *GetTransitionEffectPanel();
 		
 		MESSAGE_FUNC_CHARPTR( OnNavigateTo, "OnNavigateTo", panelName );
-
-		bool IsMenuBackgroundMovieValid( void );
-
-		bool IsBackgroundMusicPlaying();
-		bool StartBackgroundMusic( float fVol );
-		void UpdateBackgroundMusicVolume( float fVol );
-		void ReleaseBackgroundMusic();
 
 		void SafeNavigateTo( Panel *pExpectedFrom, Panel *pDesiredTo, bool bAllowStealFocus );
 
@@ -196,12 +192,9 @@ namespace BaseModUI
 		void ReleaseStartupGraphic();
 		void DrawStartupGraphic( float flNormalizedAlpha );
 		IVTFTexture			*m_pBackgroundTexture;
-	};
 
-	//-----------------------------------------------------------------------------
-	// Purpose: singleton accessor
-	//-----------------------------------------------------------------------------
-	extern CBaseModPanel *BasePanel();
+		vgui::DHANDLE< CBaseModTransitionPanel > m_pTransitionPanel;
+	};
 };
 
 #endif
