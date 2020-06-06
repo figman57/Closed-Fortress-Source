@@ -122,6 +122,9 @@ void CBaseModTransitionPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	SetPos( 0, 0 );
 	SetSize( screenWide, screenTall );
+
+	SetMouseInputEnabled(false);
+	SetKeyBoardInputEnabled(false);
 }
 
 void CBaseModTransitionPanel::OnKeyCodePressed( KeyCode keycode )
@@ -631,8 +634,6 @@ void CBaseModTransitionPanel::Paint()
 
 	if ( m_bTransitionActive )
 	{
-		MoveToFront();
-
 		SaveCurrentScreen( m_pCurrentScreenRT );
 		DrawEffect();
 	}

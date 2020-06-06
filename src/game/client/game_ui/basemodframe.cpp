@@ -932,7 +932,8 @@ void CBaseModFrame::DrawDialogBackground( const char *pMajor, const wchar_t *pMa
 	int width;
 	int height;
 	GetSize(width, height);
-	// CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MoveToFront();
+
+	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MoveToFront();
 	CBaseModPanel::GetSingleton().GetTransitionEffectPanel()->MarkTilesInRect(0, 0, width, height, m_WindowType);
 
 	// resolve the major title

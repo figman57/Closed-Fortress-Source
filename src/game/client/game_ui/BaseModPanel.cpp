@@ -330,6 +330,9 @@ void CBaseModPanel::ReloadScheme()
 //=============================================================================
 CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame * caller, bool hidePrevious, KeyValues *pParameters)
 {
+	GetTransitionEffectPanel()->SetInitialState();
+	GetTransitionEffectPanel()->MoveToFront();
+
 	CBaseModFrame *newNav = m_Frames[ wt ].Get();
 	bool setActiveWindow = true;
 
@@ -529,7 +532,6 @@ CBaseModFrame* CBaseModPanel::OpenWindow(const WINDOW_TYPE & wt, CBaseModFrame *
 		newNav->OnOpen();
 	}
 
-	GetTransitionEffectPanel()->MoveToFront();
 	GetTransitionEffectPanel()->SetExpectedDirection(true, wt);
 
 	if ( UI_IsDebug() && (wt != WT_LOADINGPROGRESS) )
@@ -1510,7 +1512,7 @@ void CBaseModPanel::PaintBackground()
 		int wide, tall;
 		GetSize( wide, tall );
 
-#if 0
+#if 1
 		if ( true /*engine->IsTransitioningToLoad()*/ )
 		{
 			ActivateBackgroundEffects();
