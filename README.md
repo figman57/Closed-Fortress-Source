@@ -1,4 +1,6 @@
-# Open Fortress: Source Code
+# Closed Fortress: Source Code
+
+THE FORTRESS IS NOW CLOSED.
 
                Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
 
